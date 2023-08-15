@@ -3,6 +3,7 @@ import json
 from get_trading_data import get_trading_data, countryElem, cityElem
 from send_data import send_data
 from add_lat_long_with_calculations import add_lat_long_with_calculations
+from filters import ethiopianProperties_filter
 
 
 finalDatabaseName='rehaniAIData'
@@ -17,7 +18,8 @@ def main():
 
     ethiopiaDict, rwandaDict, ghanaDict, kenyaDict, ugandaDict, nigeriaDict, tanzaniaDict, senegalDict, egyptDict, gambiaDict, moroccoDict, southAfricaDict, congoDict, zimbabweDict, namibiaDict, angolaDict, mozambiqueDict, malawiDict, zambiaDict, ivoryCoastDict, burundiDict, southSudanDict, botswanaDict, saudiArabiaDict = countriesDb
     
-    df_concat = pd.concat([df1, df2, df3], ignore_index=True)
+    df1 = ethiopianProperties_filter()
+    df_concat = pd.concat([df1], ignore_index=True)
     df_concat['Location: City'] = df_concat['Location: City'].str.replace('\d+', '').str.strip().str.replace('County', '')
     df_concat = df_concat.rename(columns=column_dict)
     df_concat['rehaniID'] = df_concat['rehaniID'].astype(str)
