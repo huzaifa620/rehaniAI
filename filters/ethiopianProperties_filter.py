@@ -1,5 +1,5 @@
 from get_data import get_data
-from get_trading_data import getCalcValue, countryElem
+from get_trading_data import getCalcValue, countryElem, cityElem
 import pandas as pd
 
 def ethiopianProperties_filter():
@@ -15,10 +15,10 @@ def ethiopianProperties_filter():
     hashIds=[]
     for rawId in df1['url']:
         hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
+        if hashId < 0:
+            hashId = int(str(hashId).replace('-','1'))
         hashIds.append(hashId)
-    df1['RehaniID']=hashIds
+    df1['rehaniID']=hashIds
     df1['Website']='ethiopianproperties.com'
     df1.rename(columns={'propertyTitle':'Title'}, inplace=True)
     df1.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
@@ -83,53 +83,31 @@ def ethiopianProperties_filter():
     
     df1['Number of high end amenities (pool, gym, spa)']=highEndAmenities
     df1['Building Security']=None
-     
-    gdpCapita=[]
-    for item in df1['Location: City'].values:
-        if item=='Addis Ababa':
-            gdpCapita.append(925)
-        else:
-            gdpCapita.append(None)
-    df1['City GDP per Capita']=gdpCapita
-    
-    population=[]
-    for item in df1['Location: City'].values:
-        if item:
-            if 'Addis Ababa' in item:
-                population.append(cityElem('Addis Ababa')['population'])
-            elif 'Mekʼelē' in item:
-                population.append(cityElem('Mekʼelē')['population'])
-            elif 'Dire Dawa' in item:
-                population.append(cityElem('Dire Dawa')['population'])
-            elif 'Adama' in item:
-                population.append(cityElem('Adama')['population'])
-            elif 'Gondar' in item:
-                population.append(cityElem('Gondar')['population'])
-            else:
-                population.append(None)
-        else:
-            population.append(None)
-            
-    growthRate=[]
-    for item in df1['Location: City'].values:
-        if item:
-            if 'Addis Ababa' in item:
-                growthRate.append(cityElem('Addis Ababa')['populationGrowthRate'])
-            elif 'Mekʼelē' in item:
-                growthRate.append(cityElem('Mekʼelē')['populationGrowthRate'])
-            elif 'Dire Dawa' in item:
-                growthRate.append(cityElem('Dire Dawa')['populationGrowthRate'])
-            elif 'Adama' in item:
-                growthRate.append(cityElem('Adama')['populationGrowthRate'])
-            elif 'Gondar' in item:
-                growthRate.append(cityElem('Gondar')['populationGrowthRate'])
-            else:
-                growthRate.append(None)
-        else:
-            growthRate.append(None)
 
-    df1['City Population']=population   
-    df1['City Population Growth Rate']=growthRate
+    cityGDP = []
+    for item in df1['Location: City'].values:
+        try:
+            cityGDP.append(cityElem(item)['gdpPerCapita'])
+        except (KeyError, TypeError):
+            cityGDP.append(None)
+    df1['City GDP per Capita']=cityGDP
+
+    population = []
+    for item in df1['Location: City'].values:
+        try:
+            population.append(cityElem(item)['population'])
+        except (KeyError, TypeError):
+            population.append(None)
+    df1['City Population']=population
+
+    populationGrowthRate = []
+    for item in df1['Location: City'].values:
+        try:
+            populationGrowthRate.append(cityElem(item)['populationGrowthRate'])
+        except (KeyError, TypeError):
+            populationGrowthRate.append(None)
+    df1['City Population Growth Rate']=populationGrowthRate
+
     df1['Agent Email Address']=None
     df1.rename(columns={'pricingCriteria':'Price criteria'}, inplace=True)
     df1.rename(columns={'agent':'Agent'}, inplace=True)

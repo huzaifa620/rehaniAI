@@ -1,10 +1,13 @@
 from pymongo import MongoClient
+from dotenv import load_dotenv
 import os
 
-CONNECTION_STRING = os.environ.get('CONNECTION_STRING')
+# Load .env file
+load_dotenv()
+
+CONNECTION_STRING = os.environ.get("CONNECTION_STRING")
 
 def get_trading_data():
-    
     client = MongoClient(CONNECTION_STRING)
     db = client['economicIndicators']
     collection1 = db['countries']
@@ -21,3 +24,5 @@ def countryElem(countryName):
 
 def cityElem(cityName):
     return next((i for i in citiesDb if i['cityName'] == cityName), None)
+
+countriesDb, citiesDb = get_trading_data()

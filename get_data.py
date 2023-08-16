@@ -1,5 +1,9 @@
 from pymongo import MongoClient
+from dotenv import load_dotenv
 import os
+
+# Load .env file
+load_dotenv()
 
 CONNECTION_STRING = os.environ.get('CONNECTION_STRING')
 
