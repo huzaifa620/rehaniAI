@@ -181,6 +181,7 @@ def add_lat_long_with_calculations(df_concat):
     
 
     def process_row(ind, result):
+        
         listings_within_neighborhood = df_concat[df_concat.apply(
             lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],
             axis=1
