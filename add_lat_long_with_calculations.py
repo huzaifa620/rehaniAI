@@ -2,7 +2,7 @@ from geopy.geocoders import Nominatim
 import json, os
 from shapely.geometry import Point, Polygon, MultiPolygon
 from geopy.distance import geodesic
-import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 import geopy.distance
 
 
@@ -47,7 +47,7 @@ with open(file_path, 'r', encoding='utf-8') as file:
 
 def add_lat_long_with_calculations(df_concat):
     global json_data, mainCountry, countries, name2Countries, name4Countries, name2CityCountries
-    
+
     geolocator = Nominatim(user_agent="longLatApp")
 
     for ind, result in df_concat.iterrows():
@@ -167,24 +167,6 @@ def add_lat_long_with_calculations(df_concat):
 
             neighborhood_density = len(df_concat) / area_sq_km
             
-            # # Calculate listing density within a 500m radius
-            # listings_within_radius = df_concat[df_concat.apply(
-            #     lambda row: geopy.distance.distance(
-            #         (row['locationLat'], row['locationLon']),
-            #         (latitude, longitude)
-            #     ).m <= 500,
-            #     axis=1
-            # )]
-            # listing_density = len(listings_within_radius) / 500
-            
-            # # Filter out listings with invalid localPrices
-            # listings_within_radius = listings_within_radius[listings_within_radius['localPrice'].apply(lambda x: isinstance(x, float))]
-
-            # # Calculate average price of all listings in the circle
-            # avg_price = listings_within_radius['localPrice'].mean()
-            listing_density = 0
-            avg_price = 0
-
             df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
             df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
             df_concat.at[ind, 'consolidatedNeighbourhood'] = result["locationNeighbourhood"] if result["locationNeighbourhood"] is not None else consolidatedNeighbourhood
@@ -192,11 +174,46 @@ def add_lat_long_with_calculations(df_concat):
             df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
             df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
             df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
-            df_concat.at[ind, 'listingDensity(listings/m)'] = listing_density
-            df_concat.at[ind, 'avgPriceInCircle'] = avg_price
             df_concat.at[ind, 'location'] = consolidatedNeighbourhood + ', ' + consolidatedCity + ', ' + consolidatedCountry
 
         else:
             print("Could not geocode address:", result["locationAddress"])
+    
+
+    def process_row(ind, result):
+        listings_within_neighborhood = df_concat[df_concat.apply(
+            lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],
+            axis=1
+        )]
+
+        if not listings_within_neighborhood.empty:
+            listings_within_neighborhood = listings_within_neighborhood[listings_within_neighborhood['localPrice'].apply(lambda x: isinstance(x, float))]
+            neighborhood_avgPrice = listings_within_neighborhood['localPrice'].mean()
+            df_concat.at[ind, 'avgPriceInNeighborhood'] = neighborhood_avgPrice
+
+            # Calculate listing density within a 500m radius
+            listings_within_radius = listings_within_neighborhood[listings_within_neighborhood.apply(
+                lambda row: geopy.distance.distance(
+                    (row['locationLat'], row['locationLon']),
+                    (latitude, longitude)
+                ).m <= 500,
+                axis=1
+            )]
+
+            if not listings_within_radius.empty:
+                listing_density = len(listings_within_radius) / 500
+
+                listings_within_radius = listings_within_radius[listings_within_radius['localPrice'].apply(lambda x: isinstance(x, float))]
+                avg_price = listings_within_radius['localPrice'].mean()
+
+                df_concat.at[ind, 'listingDensity(listings/m)'] = listing_density
+                df_concat.at[ind, 'avgPriceInCircle'] = avg_price
+
+    max_workers = 16
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(process_row, ind, result) for ind, result in df_concat.iterrows()]
+
+        for future in futures:
+            future.result()
 
     return df_concat
