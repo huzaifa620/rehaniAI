@@ -46,7 +46,7 @@ with open(file_path, 'r', encoding='utf-8') as file:
 
 
 def add_lat_long_with_calculations(df_concat):
-    global json_data, mainCountry, countries, name2Countries, name4Countries, name2CityCountries
+    global folder_path, json_data, mainCountry, countries, name2Countries, name4Countries, name2CityCountries
 
     geolocator = Nominatim(user_agent="longLatApp")
 
@@ -115,8 +115,9 @@ def add_lat_long_with_calculations(df_concat):
 
             if mainCountry != result["locationCountry"]:
                 mainCountry = result["locationCountry"]
-                json_file_path = f'{countries[result["locationCountry"]]}.json'
-                with open(json_file_path, "r") as file:
+                file_path = os.path.join(folder_path, f'{countries[result["locationCountry"]]}.json')
+
+                with open(file_path, "r") as file:
                     json_data = json.load(file)
             
             point = Point(longitude, latitude)

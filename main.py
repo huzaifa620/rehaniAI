@@ -3,6 +3,8 @@ import json
 from send_data import send_data
 from add_lat_long_with_calculations import add_lat_long_with_calculations
 from filters.ethiopianProperties_filter import ethiopianProperties_filter
+from filters.houseInRwanda_filter import houseInRwanda_filter
+
 import os, sys
 
 # Get the parent directory (project root)
@@ -20,8 +22,8 @@ with open('columns.json', 'r') as json_file:
 def main():
 
     df1 = ethiopianProperties_filter()
-
-    df_concat = pd.concat([df1], ignore_index=True)
+    df2 = houseInRwanda_filter()
+    df_concat = pd.concat([df1, df2], ignore_index=True)
     df_concat['Location: City'] = df_concat['Location: City'].str.replace('\d+', '').str.strip().str.replace('County', '')
     df_concat = df_concat.rename(columns=column_dict)
     df_concat['rehaniID'] = df_concat['rehaniID'].astype(str)

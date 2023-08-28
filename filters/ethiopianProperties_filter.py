@@ -3,7 +3,6 @@ from get_trading_data import getCalcValue, countryElem, cityElem
 import pandas as pd
 
 def ethiopianProperties_filter():
-
     databaseName='EthiopianProperties'
     dbname_1=get_data(databaseName)
     collection_name_1 = dbname_1['propertyDetails']
