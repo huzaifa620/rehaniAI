@@ -18,7 +18,10 @@ def send_data(df, databaseName, collectionName):
         collection_name = dbname[collectionName]
 
         for instance in mongo_insert_data:
-            collection_name.update_one({'rehaniID': instance['rehaniID']}, {'$set': instance}, upsert=True)
+            try:
+                collection_name.update_one({'rehaniID': instance['rehaniID']}, {'$set': instance}, upsert=True)
+            except:
+                print('')
         print('Data sent to MongoDB successfully')
 
     except Exception as e:

@@ -5,6 +5,7 @@ import json
 from google_currency import convert
 
 def houseInRwanda_filter():
+    
     databaseName='HouseInRwanda'
     dbname_1=get_data(databaseName)
     collection_name_1 = dbname_1['propertyDetails']
