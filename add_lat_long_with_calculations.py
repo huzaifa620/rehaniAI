@@ -216,6 +216,9 @@ def add_lat_long_with_calculations(df_concat):
         futures = [executor.submit(process_row, ind, result) for ind, result in df_concat.iterrows()]
 
         for future in futures:
-            future.result()
+            try:
+                future.result()
+            except AssertionError as e:
+                print("An AssertionError occurred:", e)
 
     return df_concat

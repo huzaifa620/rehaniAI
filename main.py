@@ -28,7 +28,7 @@ def main():
     df1 = ethiopianProperties_filter()
     df2 = houseInRwanda_filter()
     df3 = seso_filter()
-    df4 = buyrentkenya_filter()
+    #df4 = buyrentkenya_filter()
 
     df_concat = pd.concat([df1, df2, df3, df4, df5, df6, df7, df8, df9, df10, df11, df12, df13, df14, df15, df16, df17, df18, df19], ignore_index=True)
     df_concat['Location: City'] = df_concat['Location: City'].str.replace('\d+', '').str.strip().str.replace('County', '')
