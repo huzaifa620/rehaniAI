@@ -1,5 +1,5 @@
 from get_data import get_data
-from get_trading_data import getCalcValue, countryElem, cityElem
+from get_trading_data import getCalcValue, cityElem
 import pandas as pd
 import json
 from google_currency import convert

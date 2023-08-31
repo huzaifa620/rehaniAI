@@ -180,14 +180,13 @@ def add_lat_long_with_calculations(df_concat):
         else:
             print("Could not geocode address:", result["locationAddress"])
     
-
     def process_row(ind, result):
         
         listings_within_neighborhood = df_concat[df_concat.apply(
             lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],
             axis=1
         )]
-
+        print(f'{len(listings_within_neighborhood)} neighbors founds')
         if not listings_within_neighborhood.empty:
             listings_within_neighborhood = listings_within_neighborhood[listings_within_neighborhood['localPrice'].apply(lambda x: isinstance(x, float))]
             neighborhood_avgPrice = listings_within_neighborhood['localPrice'].mean()
@@ -218,7 +217,7 @@ def add_lat_long_with_calculations(df_concat):
         for future in futures:
             try:
                 future.result()
-            except AssertionError as e:
-                print("An AssertionError occurred:", e)
+            except Exception as e:
+                print("An Error occurred:", e)
 
     return df_concat

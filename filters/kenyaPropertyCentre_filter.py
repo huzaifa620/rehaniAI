@@ -53,6 +53,7 @@ def kenyaPropertyCentre_filter():
             parking.append(True)
     df6['Parking']=parking 
     df6['localPrice'] = df6['price']
+    df6['localCurrency'] = df6['currency']
     kshToUsd=float(json.loads(convert('kes', 'usd', 1))['amount'])
     prices=[]
     for idx,item in enumerate(df6['price']):
@@ -65,7 +66,7 @@ def kenyaPropertyCentre_filter():
     for idx,item in enumerate(df6['priceDiff']):
         if df6['currency'][idx]=='KSh':
             item=item*kshToUsd
-        prices.append(item)   
+        prices.append(item)
     df6['pricingCriteria']=df6['pricingCriteria'].where(pd.notnull(df6['pricingCriteria']), None)
     df6['pricingCriteria']=df6['pricingCriteria'].str.replace('per ','')
     df6['pricingCriteria']=df6['pricingCriteria'].str.replace('calendar ','')
