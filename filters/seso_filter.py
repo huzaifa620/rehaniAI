@@ -157,12 +157,12 @@ def seso_filter():
     df3['Building Permits'] = getCalcValue('buildingPermits', df3)
     df3['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df3)
 
-    df3['Dollars Per Tourist'] = getCalcValue('dollarsPerTourist', df3)
-    df3['Percentage of Tourists (2021)'] = getCalcValue('touristArrivals2021', df3)
-    df3['Percentage of Tourists (2022)'] = getCalcValue('touristArrivals2022', df3)
-    df3['Percentage of Tourists (2023)'] = getCalcValue('touristArrivals2023', df3)
-    df3['Estimated Tourist Dollars'] = getCalcValue('estimatedTouristDollars', df3)
-    df3['Estimated Tourist Arrivals'] = getCalcValue('estimatedTouristArrivals', df3)
+    df3['dollarsPerTourist'] = getCalcValue('dollarsPerTourist', df3)
+    df3['percentageOfTourists(2021)'] = getCalcValue('touristArrivals2021', df3)
+    df3['percentageOfTourists(2022)'] = getCalcValue('touristArrivals2022', df3)
+    df3['percentageOfTourists(2023)'] = getCalcValue('touristArrivals2023', df3)
+    df3['estimatedTouristDollars'] = getCalcValue('estimatedTouristDollars', df3)
+    df3['estimatedTouristArrivals'] = getCalcValue('estimatedTouristArrivals', df3)
 
     df3.drop(['features','currency','propertyId','area','unitsAvailable'], axis=1,inplace=True)
     df3 = df3.reindex(sorted(df3.columns), axis=1)

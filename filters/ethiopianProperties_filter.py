@@ -139,12 +139,12 @@ def ethiopianProperties_filter():
     df1['Building Permits'] = getCalcValue('buildingPermits', df1)
     df1['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df1)
 
-    df1['Dollars Per Tourist'] = getCalcValue('dollarsPerTourist', df1)
-    df1['Dollars Per Tourist'] = getCalcValue('touristArrivals2021', df1)
-    df1['Dollars Per Tourist'] = getCalcValue('touristArrivals2022', df1)
-    df1['Dollars Per Tourist'] = getCalcValue('touristArrivals2023', df1)
-    df1['Dollars Per Tourist'] = getCalcValue('estimatedTouristDollars', df1)
-    df1['Dollars Per Tourist'] = getCalcValue('estimatedTouristArrivals', df1)
+    df1['dollarsPerTourist'] = getCalcValue('dollarsPerTourist', df1)
+    df1['percentageOfTourists(2021)'] = getCalcValue('touristArrivals2021', df1)
+    df1['percentageOfTourists(2022)'] = getCalcValue('touristArrivals2022', df1)
+    df1['percentageOfTourists(2023)'] = getCalcValue('touristArrivals2023', df1)
+    df1['estimatedTouristDollars'] = getCalcValue('estimatedTouristDollars', df1)
+    df1['estimatedTouristArrivals'] = getCalcValue('estimatedTouristArrivals', df1)
 
     df1 = df1.reindex(sorted(df1.columns), axis=1)
 
