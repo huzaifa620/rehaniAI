@@ -147,7 +147,7 @@ def seso_filter():
     df3['Interbank Rate'] = getCalcValue('interbankRate', df3)
     df3['Country Remittance'] = getCalcValue('countryRemittance', df3)
     df3['Tourist Arrivals'] = getCalcValue('touristArrivals', df3)
-    df3['Tourist Dollars (in thousands)'] = getCalcValue('touristDollars', df3)
+    df3['Tourist Dollars'] = getCalcValue('touristDollars', df3)
     df3['Foreign Direct Investment'] = getCalcValue('foreignDirectInvestment', df3)
     df3['Personal Income Tax Rate'] = getCalcValue('personalIncomeTaxRate', df3)
     df3['Construction GDP'] = getCalcValue('constructionGDP', df3)
@@ -157,7 +157,14 @@ def seso_filter():
     df3['Building Permits'] = getCalcValue('buildingPermits', df3)
     df3['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df3)
 
-    df3.drop(['features','currency','description','propertyId','area','unitsAvailable'], axis=1,inplace=True)
+    df3['Dollars Per Tourist'] = getCalcValue('dollarsPerTourist', df3)
+    df3['Percentage of Tourists (2021)'] = getCalcValue('touristArrivals2021', df3)
+    df3['Percentage of Tourists (2022)'] = getCalcValue('touristArrivals2022', df3)
+    df3['Percentage of Tourists (2023)'] = getCalcValue('touristArrivals2023', df3)
+    df3['Estimated Tourist Dollars'] = getCalcValue('estimatedTouristDollars', df3)
+    df3['Estimated Tourist Arrivals'] = getCalcValue('estimatedTouristArrivals', df3)
+
+    df3.drop(['features','currency','propertyId','area','unitsAvailable'], axis=1,inplace=True)
     df3 = df3.reindex(sorted(df3.columns), axis=1)
 
     return df3

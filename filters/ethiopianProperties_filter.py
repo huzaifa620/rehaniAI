@@ -111,7 +111,7 @@ def ethiopianProperties_filter():
     df1.rename(columns={'pricingCriteria':'Price criteria'}, inplace=True)
     df1.rename(columns={'agent':'Agent'}, inplace=True)
     df1.rename(columns={'agentNumber':'Agent Contact'}, inplace=True)
-    df1.drop(['amenities','currency','description','features','garage','propertyId'], axis=1,inplace=True)
+    df1.drop(['amenities','currency','features','garage','propertyId'], axis=1,inplace=True)
     df1['Location: District']=None
 
     df1['Country GDP Growth Rate'] = getCalcValue('gdpGrowthRate', df1)
@@ -129,7 +129,7 @@ def ethiopianProperties_filter():
     df1['Interbank Rate'] = getCalcValue('interbankRate', df1)
     df1['Country Remittance'] = getCalcValue('countryRemittance', df1)
     df1['Tourist Arrivals'] = getCalcValue('touristArrivals', df1)
-    df1['Tourist Dollars (in thousands)'] = getCalcValue('touristDollars', df1)
+    df1['Tourist Dollars'] = getCalcValue('touristDollars', df1)
     df1['Foreign Direct Investment'] = getCalcValue('foreignDirectInvestment', df1)
     df1['Personal Income Tax Rate'] = getCalcValue('personalIncomeTaxRate', df1)
     df1['Construction GDP'] = getCalcValue('constructionGDP', df1)
@@ -138,6 +138,13 @@ def ethiopianProperties_filter():
     df1['Government Debt To GDP'] = getCalcValue('governmentDebtToGDP', df1)
     df1['Building Permits'] = getCalcValue('buildingPermits', df1)
     df1['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df1)
+
+    df1['Dollars Per Tourist'] = getCalcValue('dollarsPerTourist', df1)
+    df1['Dollars Per Tourist'] = getCalcValue('touristArrivals2021', df1)
+    df1['Dollars Per Tourist'] = getCalcValue('touristArrivals2022', df1)
+    df1['Dollars Per Tourist'] = getCalcValue('touristArrivals2023', df1)
+    df1['Dollars Per Tourist'] = getCalcValue('estimatedTouristDollars', df1)
+    df1['Dollars Per Tourist'] = getCalcValue('estimatedTouristArrivals', df1)
 
     df1 = df1.reindex(sorted(df1.columns), axis=1)
 
