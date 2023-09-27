@@ -21,7 +21,7 @@ def seso_filter():
             hashId=int(str(hashId).replace('-','1'))
         hashIds.append(hashId)
     df3['rehaniID']=hashIds  
-
+    print(type(hashIds[0]))
     df3['Website']='seso.global'
     df3.rename(columns={'propertyName':'Title'}, inplace=True)
     df3['Agent']=None
@@ -131,38 +131,6 @@ def seso_filter():
         except (KeyError, TypeError):
             populationGrowthRate.append(None)
     df3['City Population Growth Rate']=populationGrowthRate
-
-    df3['Country GDP Growth Rate'] = getCalcValue('gdpGrowthRate', df3)
-    df3['Country Interest Rates'] = getCalcValue('interestRates', df3)
-    df3['Country Mortgage Rates'] = getCalcValue('mortgageRates', df3)
-    df3['Country gdp'] = getCalcValue('countryGdp', df3)
-    df3['Country gdp per capita'] = getCalcValue('countryGdpPerCapita', df3)
-    df3['Fed Funds Rate'] = getCalcValue('fedFundsRate', df3)
-    df3['Inflation Rate'] = getCalcValue('inflationRate', df3)
-    df3['US Mortgage Rates'] = getCalcValue('usMortgageRates', df3)
-    df3['Mortgage rate for 10 years'] = getCalcValue('mortgageRateFor10Years', df3)
-    df3['Mortgage rate for 15 years'] = getCalcValue('mortgageRateFor15Years', df3)
-    df3['Mortgage rate for 20 years'] = getCalcValue('mortgageRateFor20Years', df3)
-    df3['Mortgage rate for 30 years'] = getCalcValue('mortgageRateFor30Years', df3)
-    df3['Interbank Rate'] = getCalcValue('interbankRate', df3)
-    df3['Country Remittance'] = getCalcValue('countryRemittance', df3)
-    df3['Tourist Arrivals'] = getCalcValue('touristArrivals', df3)
-    df3['Tourist Dollars'] = getCalcValue('touristDollars', df3)
-    df3['Foreign Direct Investment'] = getCalcValue('foreignDirectInvestment', df3)
-    df3['Personal Income Tax Rate'] = getCalcValue('personalIncomeTaxRate', df3)
-    df3['Construction GDP'] = getCalcValue('constructionGDP', df3)
-    df3['Unemployment Rate'] = getCalcValue('unemploymentRate', df3)
-    df3['Minimum Wage (USD/month)'] = getCalcValue('minimumWage(USD/month)', df3)
-    df3['Government Debt To GDP'] = getCalcValue('governmentDebtToGDP', df3)
-    df3['Building Permits'] = getCalcValue('buildingPermits', df3)
-    df3['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df3)
-
-    df3['dollarsPerTourist'] = getCalcValue('dollarsPerTourist', df3)
-    df3['percentageOfTourists(2021)'] = getCalcValue('touristArrivals2021', df3)
-    df3['percentageOfTourists(2022)'] = getCalcValue('touristArrivals2022', df3)
-    df3['percentageOfTourists(2023)'] = getCalcValue('touristArrivals2023', df3)
-    df3['estimatedTouristDollars'] = getCalcValue('estimatedTouristDollars', df3)
-    df3['estimatedTouristArrivals'] = getCalcValue('estimatedTouristArrivals', df3)
 
     df3.drop(['features','currency','propertyId','area','unitsAvailable'], axis=1,inplace=True)
     df3 = df3.reindex(sorted(df3.columns), axis=1)

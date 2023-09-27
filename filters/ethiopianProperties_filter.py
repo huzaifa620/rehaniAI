@@ -114,38 +114,6 @@ def ethiopianProperties_filter():
     df1.drop(['amenities','currency','features','garage','propertyId'], axis=1,inplace=True)
     df1['Location: District']=None
 
-    df1['Country GDP Growth Rate'] = getCalcValue('gdpGrowthRate', df1)
-    df1['Country Interest Rates'] = getCalcValue('interestRates', df1)
-    df1['Country Mortgage Rates'] = getCalcValue('mortgageRates', df1)
-    df1['Country gdp'] = getCalcValue('countryGdp', df1)
-    df1['Country gdp per capita'] = getCalcValue('countryGdpPerCapita', df1)
-    df1['Fed Funds Rate'] = getCalcValue('fedFundsRate', df1)
-    df1['Inflation Rate'] = getCalcValue('inflationRate', df1)
-    df1['US Mortgage Rates'] = getCalcValue('usMortgageRates', df1)
-    df1['Mortgage rate for 10 years'] = getCalcValue('mortgageRateFor10Years', df1)
-    df1['Mortgage rate for 15 years'] = getCalcValue('mortgageRateFor15Years', df1)
-    df1['Mortgage rate for 20 years'] = getCalcValue('mortgageRateFor20Years', df1)
-    df1['Mortgage rate for 30 years'] = getCalcValue('mortgageRateFor30Years', df1)
-    df1['Interbank Rate'] = getCalcValue('interbankRate', df1)
-    df1['Country Remittance'] = getCalcValue('countryRemittance', df1)
-    df1['Tourist Arrivals'] = getCalcValue('touristArrivals', df1)
-    df1['Tourist Dollars'] = getCalcValue('touristDollars', df1)
-    df1['Foreign Direct Investment'] = getCalcValue('foreignDirectInvestment', df1)
-    df1['Personal Income Tax Rate'] = getCalcValue('personalIncomeTaxRate', df1)
-    df1['Construction GDP'] = getCalcValue('constructionGDP', df1)
-    df1['Unemployment Rate'] = getCalcValue('unemploymentRate', df1)
-    df1['Minimum Wage (USD/month)'] = getCalcValue('minimumWage(USD/month)', df1)
-    df1['Government Debt To GDP'] = getCalcValue('governmentDebtToGDP', df1)
-    df1['Building Permits'] = getCalcValue('buildingPermits', df1)
-    df1['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df1)
-
-    df1['dollarsPerTourist'] = getCalcValue('dollarsPerTourist', df1)
-    df1['percentageOfTourists(2021)'] = getCalcValue('touristArrivals2021', df1)
-    df1['percentageOfTourists(2022)'] = getCalcValue('touristArrivals2022', df1)
-    df1['percentageOfTourists(2023)'] = getCalcValue('touristArrivals2023', df1)
-    df1['estimatedTouristDollars'] = getCalcValue('estimatedTouristDollars', df1)
-    df1['estimatedTouristArrivals'] = getCalcValue('estimatedTouristArrivals', df1)
-
     df1 = df1.reindex(sorted(df1.columns), axis=1)
 
     return df1

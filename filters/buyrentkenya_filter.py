@@ -126,32 +126,6 @@ def buyrentkenya_filter():
             populationGrowthRate.append(None)
     df4['City Population Growth Rate']=populationGrowthRate
 
-    df4['Country GDP Growth Rate'] = getCalcValue('gdpGrowthRate', df4)
-    df4['Country Interest Rates'] = getCalcValue('interestRates', df4)
-    df4['Country Mortgage Rates'] = getCalcValue('mortgageRates', df4)
-    df4['Country gdp'] = getCalcValue('countryGdp', df4)
-    df4['Country gdp per capita'] = getCalcValue('countryGdpPerCapita', df4)
-    df4['Fed Funds Rate'] = getCalcValue('fedFundsRate', df4)
-    df4['Inflation Rate'] = getCalcValue('inflationRate', df4)
-    df4['US Mortgage Rates'] = getCalcValue('usMortgageRates', df4)
-    df4['Mortgage rate for 10 years'] = getCalcValue('mortgageRateFor10Years', df4)
-    df4['Mortgage rate for 15 years'] = getCalcValue('mortgageRateFor15Years', df4)
-    df4['Mortgage rate for 20 years'] = getCalcValue('mortgageRateFor20Years', df4)
-    df4['Mortgage rate for 30 years'] = getCalcValue('mortgageRateFor30Years', df4)
-    df4['Interbank Rate'] = getCalcValue('interbankRate', df4)
-    df4['Country Remittance'] = getCalcValue('countryRemittance', df4)
-    df4['Tourist Arrivals'] = getCalcValue('touristArrivals', df4)
-    df4['Tourist Dollars (in thousands)'] = getCalcValue('touristDollars', df4)
-    df4['Foreign Direct Investment'] = getCalcValue('foreignDirectInvestment', df4)
-    df4['Personal Income Tax Rate'] = getCalcValue('personalIncomeTaxRate', df4)
-    df4['Construction GDP'] = getCalcValue('constructionGDP', df4)
-    df4['Unemployment Rate'] = getCalcValue('unemploymentRate', df4)
-    df4['Minimum Wage (USD/month)'] = getCalcValue('minimumWage(USD/month)', df4)
-    df4['Government Debt To GDP'] = getCalcValue('governmentDebtToGDP', df4)
-    df4['Building Permits'] = getCalcValue('buildingPermits', df4)
-    df4['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df4)
-
-
     df4.drop(['amenities','currency','description','propertyId','dateListed','marketPriceHigher','floors','marketPriceLower','numberOfUnits','projectPriceHigher','projectPriceLower','similarPropertiesInfo'], axis=1,inplace=True)
     df4 = df4.reindex(sorted(df4.columns), axis=1)
 

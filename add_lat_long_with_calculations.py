@@ -111,12 +111,11 @@ def add_lat_long_with_calculations(df_concat):
             longitude = location.longitude
             df_concat.at[ind, 'locationLat'] = latitude
             df_concat.at[ind, 'locationLon'] = longitude
-            print(location.latitude, " ----- ", location.longitude)
+            print(location.latitude, " ----- ", location.longitude, mainCountry, result["locationCountry"])
 
             if mainCountry != result["locationCountry"]:
                 mainCountry = result["locationCountry"]
                 file_path = os.path.join(folder_path, f'{countries[result["locationCountry"]]}.json')
-
                 with open(file_path, "r") as file:
                     json_data = json.load(file)
             
@@ -164,19 +163,19 @@ def add_lat_long_with_calculations(df_concat):
                         distance = point.distance(polygon_center)
                         distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
                         area_sq_km = multi_polygon.area * 111.32**2
+
+                        neighborhood_density = (len(df_concat) / area_sq_km ) if area_sq_km else None
+                        
+                        df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
+                        df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
+                        df_concat.at[ind, 'consolidatedNeighbourhood'] = result["locationNeighbourhood"] if result["locationNeighbourhood"] is not None else consolidatedNeighbourhood
+                        df_concat.at[ind, 'consolidatedState'] = consolidatedState
+                        df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
+                        df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
+                        df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
+                        df_concat.at[ind, 'location'] = consolidatedNeighbourhood + ', ' + consolidatedCity + ', ' + consolidatedCountry
+
                         break
-
-            neighborhood_density = len(df_concat) / area_sq_km
-            
-            df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
-            df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
-            df_concat.at[ind, 'consolidatedNeighbourhood'] = result["locationNeighbourhood"] if result["locationNeighbourhood"] is not None else consolidatedNeighbourhood
-            df_concat.at[ind, 'consolidatedState'] = consolidatedState
-            df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
-            df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
-            df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
-            df_concat.at[ind, 'location'] = consolidatedNeighbourhood + ', ' + consolidatedCity + ', ' + consolidatedCountry
-
         else:
             print("Could not geocode address:", result["locationAddress"])
     

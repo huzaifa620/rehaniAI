@@ -1,5 +1,5 @@
 from get_data import get_data
-from get_trading_data import getCalcValue, cityElem
+from get_trading_data import cityElem
 import pandas as pd
 
 def airbnb_filter():
@@ -94,31 +94,6 @@ def airbnb_filter():
         except (KeyError, TypeError):
             populationGrowthRate.append(None)
     df10['City Population Growth Rate']=populationGrowthRate
-
-    df10['Country GDP Growth Rate'] = getCalcValue('gdpGrowthRate', df10)
-    df10['Country Interest Rates'] = getCalcValue('interestRates', df10)
-    df10['Country Mortgage Rates'] = getCalcValue('mortgageRates', df10)
-    df10['Country gdp'] = getCalcValue('countryGdp', df10)
-    df10['Country gdp per capita'] = getCalcValue('countryGdpPerCapita', df10)
-    df10['Fed Funds Rate'] = getCalcValue('fedFundsRate', df10)
-    df10['Inflation Rate'] = getCalcValue('inflationRate', df10)
-    df10['US Mortgage Rates'] = getCalcValue('usMortgageRates', df10)
-    df10['Mortgage rate for 10 years'] = getCalcValue('mortgageRateFor10Years', df10)
-    df10['Mortgage rate for 15 years'] = getCalcValue('mortgageRateFor15Years', df10)
-    df10['Mortgage rate for 20 years'] = getCalcValue('mortgageRateFor20Years', df10)
-    df10['Mortgage rate for 30 years'] = getCalcValue('mortgageRateFor30Years', df10)
-    df10['Interbank Rate'] = getCalcValue('interbankRate', df10)
-    df10['Country Remittance'] = getCalcValue('countryRemittance', df10)
-    df10['Tourist Arrivals'] = getCalcValue('touristArrivals', df10)
-    df10['Tourist Dollars (in thousands)'] = getCalcValue('touristDollars', df10)
-    df10['Foreign Direct Investment'] = getCalcValue('foreignDirectInvestment', df10)
-    df10['Personal Income Tax Rate'] = getCalcValue('personalIncomeTaxRate', df10)
-    df10['Construction GDP'] = getCalcValue('constructionGDP', df10)
-    df10['Unemployment Rate'] = getCalcValue('unemploymentRate', df10)
-    df10['Minimum Wage (USD/month)'] = getCalcValue('minimumWage(USD/month)', df10)
-    df10['Government Debt To GDP'] = getCalcValue('governmentDebtToGDP', df10)
-    df10['Building Permits'] = getCalcValue('buildingPermits', df10)
-    df10['Price To Rent Ratio'] = getCalcValue('priceToRentRatio', df10)
 
     df10.drop(["propertyId","ReviewCount","accuracyRating","amenities","bedType","bedroom","cancellationPolicy","checkinRating","cleanlinessRating","communicationRating","currency","daysFree","description","discountedPrice","guestSatisfactionOverall","instantBook","isSuperhost","locationRating","newEntry","occupancyRate","occupancyOne","occupancyTwo","personCapacity","recentReview","recentReviewDate","recentReviewRating","reviewsPerMonth","roomType","valueRating"], axis=1,inplace=True)
 
