@@ -148,7 +148,7 @@ def houseInRwanda_filter():
             populationGrowthRate.append(None)
     df2['City Population Growth Rate']=populationGrowthRate
 
-    df2.drop(['amenities','currency','description','propertyId','expiryDate','furnished','totalFloors'], axis=1,inplace=True)
+    df2.drop(['amenities','currency','propertyId','expiryDate','furnished','totalFloors'], axis=1,inplace=True)
 
     df2 = df2.reindex(sorted(df2.columns), axis=1)
 

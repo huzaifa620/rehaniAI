@@ -116,7 +116,7 @@ def prophunt_filter():
             populationGrowthRate.append(None)
     df7['City Population Growth Rate']=populationGrowthRate
 
-    df7.drop(['propertyId','amenities','dateListed','currency','description','parkingVehicles'], axis=1,inplace=True)
+    df7.drop(['propertyId','amenities','dateListed','currency','parkingVehicles'], axis=1,inplace=True)
     df7 = df7.reindex(sorted(df7.columns), axis=1)
 
     return df7

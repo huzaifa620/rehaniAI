@@ -21,7 +21,7 @@ def seso_filter():
             hashId=int(str(hashId).replace('-','1'))
         hashIds.append(hashId)
     df3['rehaniID']=hashIds  
-    print(type(hashIds[0]))
+
     df3['Website']='seso.global'
     df3.rename(columns={'propertyName':'Title'}, inplace=True)
     df3['Agent']=None

@@ -117,7 +117,7 @@ def propertypro_co_ug_filter():
             populationGrowthRate.append(None)
     df9['City Population Growth Rate']=populationGrowthRate
 
-    df9.drop(['propertyId','amenities','currency','description','toilets','marketPriceHigher','marketPriceLower'], axis=1,inplace=True)
+    df9.drop(['propertyId','amenities','currency','toilets','marketPriceHigher','marketPriceLower'], axis=1,inplace=True)
     df9 = df9.reindex(sorted(df9.columns), axis=1)
 
     return df9

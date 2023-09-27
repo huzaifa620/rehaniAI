@@ -226,7 +226,7 @@ def propertypro_co_ke_filter():
             growthRate.append(cityGdpGrowthRate[item])
     df8['City Population Growth Rate']=growthRate
 
-    df8.drop(['propertyId','amenities','currency','description','toilets','marketPriceHigher','marketPriceLower'], axis=1,inplace=True)
+    df8.drop(['propertyId','amenities','currency','toilets','marketPriceHigher','marketPriceLower'], axis=1,inplace=True)
     df8 = df8.reindex(sorted(df8.columns), axis=1)
 
     return df8

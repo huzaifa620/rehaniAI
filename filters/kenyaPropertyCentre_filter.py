@@ -136,7 +136,7 @@ def kenyaPropertyCentre_filter():
             populationGrowthRate.append(None)
     df6['City Population Growth Rate']=populationGrowthRate
 
-    df6.drop(['propertyId','addedOn','coveredArea','currency','description','lastUpdated','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
+    df6.drop(['propertyId','addedOn','coveredArea','currency','lastUpdated','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
     df6 = df6.reindex(sorted(df6.columns), axis=1)
 
     return df6

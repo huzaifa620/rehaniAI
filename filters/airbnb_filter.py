@@ -95,7 +95,7 @@ def airbnb_filter():
             populationGrowthRate.append(None)
     df10['City Population Growth Rate']=populationGrowthRate
 
-    df10.drop(["propertyId","ReviewCount","accuracyRating","amenities","bedType","bedroom","cancellationPolicy","checkinRating","cleanlinessRating","communicationRating","currency","daysFree","description","discountedPrice","guestSatisfactionOverall","instantBook","isSuperhost","locationRating","newEntry","occupancyRate","occupancyOne","occupancyTwo","personCapacity","recentReview","recentReviewDate","recentReviewRating","reviewsPerMonth","roomType","valueRating"], axis=1,inplace=True)
+    df10.drop(["propertyId","ReviewCount","accuracyRating","amenities","bedType","bedroom","cancellationPolicy","checkinRating","cleanlinessRating","communicationRating","currency","daysFree","discountedPrice","guestSatisfactionOverall","instantBook","isSuperhost","locationRating","newEntry","occupancyRate","occupancyOne","occupancyTwo","personCapacity","recentReview","recentReviewDate","recentReviewRating","reviewsPerMonth","roomType","valueRating"], axis=1,inplace=True)
 
     df10 = df10.reindex(sorted(df10.columns), axis=1)
 

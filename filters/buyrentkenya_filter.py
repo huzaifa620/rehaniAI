@@ -126,7 +126,7 @@ def buyrentkenya_filter():
             populationGrowthRate.append(None)
     df4['City Population Growth Rate']=populationGrowthRate
 
-    df4.drop(['amenities','currency','description','propertyId','dateListed','marketPriceHigher','floors','marketPriceLower','numberOfUnits','projectPriceHigher','projectPriceLower','similarPropertiesInfo'], axis=1,inplace=True)
+    df4.drop(['amenities','currency','propertyId','dateListed','marketPriceHigher','floors','marketPriceLower','numberOfUnits','projectPriceHigher','projectPriceLower','similarPropertiesInfo'], axis=1,inplace=True)
     df4 = df4.reindex(sorted(df4.columns), axis=1)
 
     return df4
