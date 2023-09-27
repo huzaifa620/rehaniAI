@@ -160,7 +160,6 @@ def add_lat_long_with_calculations(df_concat):
 
                         print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
                         polygon_center = multi_polygon.centroid
-                        distance = point.distance(polygon_center)
                         distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
                         area_sq_km = multi_polygon.area * 111.32**2
 
