@@ -1,5 +1,5 @@
 from get_data import get_data
-from get_trading_data import getCalcValue, cityElem
+from get_trading_data import cityElem
 import pandas as pd
 import numpy as np
 import json, re
@@ -21,7 +21,7 @@ def kenyaPropertyCentre_filter():
         if hashId<0:
             hashId=int(str(hashId).replace('-','1'))
         hashIds.append(hashId)
-    df6['RehaniID']=hashIds
+    df6['rehaniID']=hashIds
 
     df6['Website']='kenyapropertycentre.com'
     df6.rename(columns={'propertyTitle':'Title'}, inplace=True)

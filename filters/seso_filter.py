@@ -1,5 +1,5 @@
 from get_data import get_data
-from get_trading_data import getCalcValue, cityElem
+from get_trading_data import cityElem
 import pandas as pd
 import json
 from google_currency import convert
@@ -20,7 +20,7 @@ def seso_filter():
         if hashId<0:
             hashId=int(str(hashId).replace('-','1'))
         hashIds.append(hashId)
-    df3['rehaniID']=hashIds  
+    df3['rehaniID']=hashIds
 
     df3['Website']='seso.global'
     df3.rename(columns={'propertyName':'Title'}, inplace=True)
