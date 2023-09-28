@@ -52,7 +52,7 @@ def add_lat_long_with_calculations(df_concat):
 
     for ind, result in df_concat.iterrows():
         
-        if result["locationAddress"] is not None and len(result["locationAddress"].split(" ")) > 1:
+        if isinstance(result["locationAddress"], str) and len(result["locationAddress"].split(" ")) > 1:
             location = geolocator.geocode(result["locationAddress"], timeout=10)
         else:
             if result["locationNeighbourhood"] is None:

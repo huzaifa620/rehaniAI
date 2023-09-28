@@ -136,8 +136,7 @@ def lamudi_filter():
             populationGrowthRate.append(None)
     df11['City Population Growth Rate']=populationGrowthRate
 
-
-    df11.drop(["propertyId","amenities","currency","description","size","tenure"], axis=1,inplace=True)
+    df11.drop(["propertyId","amenities","currency","size","tenure"], axis=1,inplace=True)
     df11 = df11.reindex(sorted(df11.columns), axis=1)
 
     return df11

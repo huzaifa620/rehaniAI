@@ -116,7 +116,7 @@ def property24_filter():
             populationGrowthRate.append(None)
     df14['City Population Growth Rate']=populationGrowthRate
 
-    df14.drop(['propertyId','currency','erfSize','floorSize','availability','country','description'], axis=1,inplace=True)
+    df14.drop(['propertyId','currency','erfSize','floorSize','availability','country'], axis=1,inplace=True)
     df14 = df14.reindex(sorted(df14.columns), axis=1)
 
     return df14
