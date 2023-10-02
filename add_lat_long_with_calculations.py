@@ -1,10 +1,9 @@
 from geopy.geocoders import Nominatim
-import json, os
-from shapely.geometry import Point, Polygon, MultiPolygon
+from shapely.geometry import shape, Polygon, MultiPolygon, Point
 from geopy.distance import geodesic
 from concurrent.futures import ThreadPoolExecutor
-import geopy.distance
-
+from shapely.validation import make_valid
+import os, json
 
 current_directory = os.getcwd()
 folder_name = 'shape_files'
@@ -33,10 +32,13 @@ countries = {
     'Zambia': 'ZAM',
     'Ivory Coast': 'CDI',
     'Burundi': 'BUR',
-    'South Sudan': 'SSD',
+    'South Sudan': 'SSD',
     'Botswana': 'BOT'
 }
-name2Countries = ('Democratic Republic of the Congo', 'Zambia', 'Zimbabwe', 'Ghana', 'Morocco', 'Egypt', 'Botswana', 'Gambia', 'Namibia')
+
+name2Countries = (
+    'Democratic Republic of the Congo', 'Zambia', 'Zimbabwe', 'Ghana', 'Morocco', 'Egypt', 'Botswana', 'Gambia', 'Namibia'
+)
 name4Countries = ('Rwanda', 'Uganda')
 name2CityCountries = ('Uganda')
 
@@ -45,141 +47,82 @@ with open(file_path, 'r', encoding='utf-8') as file:
     json_data = json.load(file)
 
 
+def process_geojson_feature(feature, point, result):
+    coordinates = feature.get('geometry', {}).get('coordinates', [])
+
+    if coordinates:
+        # Construct the geometry
+        geometry = shape({'type': feature['geometry']['type'], 'coordinates': coordinates})
+
+        # Check if the geometry is valid and fix it if needed
+        if not geometry.is_valid:
+            geometry = make_valid(geometry)
+
+        # Check if the point is within the geometry
+        if geometry.contains(point):
+            consolidatedCountry = feature['properties'].get('COUNTRY', result["locationCountry"])
+            consolidatedCity = feature['properties'].get('NAME_2' if result["locationCountry"] in name2CityCountries else 'NAME_1', "")
+            consolidatedNeighbourhood = feature['properties'].get('NAME_2' if result["locationCountry"] in (name2Countries, name4Countries) else 'NAME_3', "")
+            consolidatedState = None
+            return geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState
+
+    return geometry, None, None, None, None
+
+
 def add_lat_long_with_calculations(df_concat):
     global folder_path, json_data, mainCountry, countries, name2Countries, name4Countries, name2CityCountries
 
     geolocator = Nominatim(user_agent="longLatApp")
 
     for ind, result in df_concat.iterrows():
-        
+        location_info = []
+
         if isinstance(result["locationAddress"], str) and len(result["locationAddress"].split(" ")) > 1:
-            location = geolocator.geocode(result["locationAddress"], timeout=10)
+            location_info.append(result["locationAddress"])
         else:
-            if result["locationNeighbourhood"] is None:
-                if result["locationDistrict"] is None:
-                    if result["locationCity"] is None:
-                        if result["locationCountry"] is None:
-                            temp = ""
-                        else:
-                            temp = result["locationCountry"]
-                    else:
-                        if result["locationCountry"] is None:
-                            temp = result["locationCity"]
-                        else:
-                            temp = result["locationCity"] + ", " + result["locationCountry"]
+            location_info.extend([result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]])
 
-                else:
-                    if result["locationCity"] is None:
-                        if result["locationCountry"] is None:
-                            temp = result["locationDistrict"]
-                        else:
-                            temp = result["locationDistrict"] + ", " + result["locationCountry"]
-                    else:
-                        if result["locationCountry"] is None:
-                            temp = result["locationDistrict"] + ", " + result["locationCity"]
-                        else:
-                            temp = result["locationDistrict"] + ", " + result["locationCity"] + ", " + result["locationCountry"]
-            else:
-                if result["locationDistrict"] is None:
-                    if result["locationCity"] is None:
-                        if result["locationCountry"] is None:
-                            temp = result["locationNeighbourhood"]
-                        else:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationCountry"]
-                    else:
-                        if result["locationCountry"] is None:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationCity"]
-                        else:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationCity"] + ", " + result["locationCountry"]
+        temp = ", ".join(filter(None, location_info))
+        location = geolocator.geocode(temp, timeout=10)
 
-                else:
-                    if result["locationCity"] is None:
-                        if result["locationCountry"] is None:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationDistrict"]
-                        else:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationDistrict"] + ", " + result["locationCountry"]
-                    else:
-                        if result["locationCountry"] is None:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationDistrict"] + ", " + result["locationCity"]
-                        else:
-                            temp = result["locationNeighbourhood"] + ", " + result["locationDistrict"] + ", " + result["locationCity"] + ", " + result["locationCountry"]
-
-            location = geolocator.geocode(temp, timeout=10)
-
-        if location is not None:
-            latitude = location.latitude
-            longitude = location.longitude
+        if location:
+            latitude, longitude = location.latitude, location.longitude
             df_concat.at[ind, 'locationLat'] = latitude
             df_concat.at[ind, 'locationLon'] = longitude
             print(location.latitude, " ----- ", location.longitude, mainCountry, result["locationCountry"])
 
             if mainCountry != result["locationCountry"]:
                 mainCountry = result["locationCountry"]
-                file_path = os.path.join(folder_path, f'{countries[result["locationCountry"]]}.json')
-                with open(file_path, "r") as file:
+                file_path = os.path.join(folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
+                with open(file_path, "r", encoding="utf-8") as file:
                     json_data = json.load(file)
-            
+
             point = Point(longitude, latitude)
-            for item in json_data['features']:
-                if item['geometry'] is not None:
-                    coordinates = item['geometry']['coordinates'][0]
-                    if item['geometry']['type'] == 'Polygon':
-                        multi_polygon = Polygon(coordinates)
-                    else:
-                        polygons = [Polygon(coords) for coords in coordinates]
-                        multi_polygon = MultiPolygon(polygons)
-            
-                    if multi_polygon.contains(point):
-                        if result["locationCountry"] == 'Nigeria':
-                            consolidatedCountry = 'Nigeria'
-                            consolidatedCity = item['properties']['lganame']
-                            consolidatedNeighbourhood = item['properties']['wardname']
-                            consolidatedState = item['properties']['statename']
 
-                        elif result["locationCountry"] == 'South Africa':
-                            consolidatedCountry = item['properties']['COUNTRY']
-                            consolidatedCity = item['properties']['NAME_3']
-                            consolidatedNeighbourhood = item['properties']['NAME_3'] + ' Ward ' + item['properties']['NAME_4']
-                            consolidatedState = None
-                        else:
-                            consolidatedCountry = item['properties']['COUNTRY']
+            for item in json_data.get('features', []):
+                geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
-                            if result["locationCountry"] in name2CityCountries:
-                                consolidatedCity = item['properties']['NAME_2']
-                            else:
-                                consolidatedCity = item['properties']['NAME_1']
+                if consolidatedCountry is not None:
+                    print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
+                    polygon_center = geometry.centroid
+                    distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
+                    area_sq_km = geometry.area * 111.32**2
+                    neighborhood_density = (len(df_concat) / area_sq_km) if area_sq_km else None
 
-                            if result["locationCountry"] in name2Countries:
-                                consolidatedNeighbourhood = item['properties']['NAME_2']
-                            elif result["locationCountry"] in name4Countries:
-                                consolidatedNeighbourhood = item['properties']['NAME_4']
-                            else:
-                                consolidatedNeighbourhood = item['properties']['NAME_3']
-
-                            consolidatedState = None
-
-                        print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
-                        polygon_center = multi_polygon.centroid
-                        distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
-                        area_sq_km = multi_polygon.area * 111.32**2
-
-                        neighborhood_density = (len(df_concat) / area_sq_km ) if area_sq_km else None
-                        
-                        df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
-                        df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
-                        df_concat.at[ind, 'consolidatedNeighbourhood'] = result["locationNeighbourhood"] if result["locationNeighbourhood"] is not None else consolidatedNeighbourhood
-                        df_concat.at[ind, 'consolidatedState'] = consolidatedState
-                        df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
-                        df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
-                        df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
-                        df_concat.at[ind, 'location'] = consolidatedNeighbourhood + ', ' + consolidatedCity + ', ' + consolidatedCountry
-
-                        break
+                    df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
+                    df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
+                    df_concat.at[ind, 'consolidatedNeighbourhood'] = result.get("locationNeighbourhood", consolidatedNeighbourhood)
+                    df_concat.at[ind, 'consolidatedState'] = consolidatedState
+                    df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
+                    df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
+                    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
+                    df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
+                    break
         else:
-            print("Could not geocode address:", result["locationAddress"])
-    
+            print("Could not geocode address:", result.get("locationAddress", ""))
+
     def process_row(ind, result):
-        
+
         listings_within_neighborhood = df_concat[df_concat.apply(
             lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],
             axis=1
