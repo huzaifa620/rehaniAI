@@ -4,6 +4,7 @@ from geopy.distance import geodesic
 from concurrent.futures import ThreadPoolExecutor
 from shapely.validation import make_valid
 import os, json
+from datetime import datetime
 
 current_directory = os.getcwd()
 folder_name = 'shape_files'
@@ -48,9 +49,8 @@ with open(file_path, 'r', encoding='utf-8') as file:
 
 
 def process_geojson_feature(feature, point, result):
-    coordinates = feature.get('geometry', {}).get('coordinates', [])
-
-    if coordinates:
+    try:
+        coordinates = feature.get('geometry', {}).get('coordinates', [])
         # Construct the geometry
         geometry = shape({'type': feature['geometry']['type'], 'coordinates': coordinates})
 
@@ -65,8 +65,11 @@ def process_geojson_feature(feature, point, result):
             consolidatedNeighbourhood = feature['properties'].get('NAME_2' if result["locationCountry"] in (name2Countries, name4Countries) else 'NAME_3', "")
             consolidatedState = None
             return geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState
-
-    return geometry, None, None, None, None
+        else:
+            return None, None, None, None, None
+    except Exception as e:
+        print('here', e)
+        return None, None, None, None, None
 
 
 def add_lat_long_with_calculations(df_concat):
@@ -102,7 +105,7 @@ def add_lat_long_with_calculations(df_concat):
             for item in json_data.get('features', []):
                 geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
-                if consolidatedCountry is not None:
+                if geometry is not None:
                     print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
                     polygon_center = geometry.centroid
                     distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
@@ -122,6 +125,8 @@ def add_lat_long_with_calculations(df_concat):
             print("Could not geocode address:", result.get("locationAddress", ""))
 
     def process_row(ind, result):
+
+        df_concat.at[ind, 'lastUpdated'] = datetime.now()
 
         listings_within_neighborhood = df_concat[df_concat.apply(
             lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],

@@ -66,11 +66,6 @@ def main():
     df_concat['rehaniID'] = df_concat['rehaniID'].astype(str)
 
     df_concat = add_lat_long_with_calculations(df_concat)
-
-    int_columns = df_concat.select_dtypes(include=['int']).columns
-    df_concat[int_columns] = df_concat[int_columns].astype(float)
-    df_concat = df_concat.round(2)
-
     send_data(df_concat, finalDatabaseName, collectionName)
 
 if __name__ == "__main__":
