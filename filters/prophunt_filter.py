@@ -64,7 +64,7 @@ def prophunt_filter():
     df7['Location: Lat']=None
     df7['Location: Lon']=None
     df7['Price per s.f.']=None
-    df7['localPrice'] = df7['Price']
+    df7['localPrice'] = df7['price']
     df7['localCurrency'] = df7['currency']
 
     gcToUsd=float(json.loads(convert('ghs', 'usd', 1))['amount'])
@@ -91,7 +91,8 @@ def prophunt_filter():
         else:
             pricingCriteria.append(None)
     df7.rename(columns={'pricingCriteria':'Price criteria'}, inplace=True)  
-
+    df7['Location: City'] = ''
+    df7['locationAddress'] = None
     cityGDP = []
     for item in df7['Location: City'].values:
         try:

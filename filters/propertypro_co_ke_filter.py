@@ -57,7 +57,7 @@ def propertypro_co_ke_filter():
     df8.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
     df8['Housing Type']=None
     df8['Days on Market']=None
-    df8['localPrice'] = df8['Price']
+    df8['localPrice'] = df8['price']
     df8['localCurrency'] = df8['currency']
     kesToUsd=float(json.loads(convert('kes', 'usd', 1))['amount'])
     prices=[]

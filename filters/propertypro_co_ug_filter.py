@@ -56,7 +56,7 @@ def propertypro_co_ug_filter():
     df9.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
     df9['Housing Type']=None
     df9['Days on Market']=None
-    df9['localPrice'] = df9['Price']
+    df9['localPrice'] = df9['price']
     df9['localCurrency'] = df9['currency']
     ugxToUsd=float(json.loads(convert('ugx', 'usd', 1))['amount'])
     prices=[]

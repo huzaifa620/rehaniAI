@@ -36,9 +36,9 @@ def ghanaPropertyCentre_filter():
     df5['listingType']=df5['listingType'].where(pd.notnull(df5['listingType']), None)
     df5.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
     today = np.datetime64('today')
-    daysOnMarket=(today - df5['addedOn'].values) / np.timedelta64(1, 'D')
-    daysOnMarket=daysOnMarket.astype('int')
-    df5['Days on Market']=daysOnMarket
+    # daysOnMarket=(today - df5['addedOn'].values) / np.timedelta64(1, 'D')
+    # daysOnMarket=daysOnMarket.astype('int')
+    # df5['Days on Market']=daysOnMarket
     df5['Occupancy']=None
     df5['Number of Guests']=None
     pricingCriteria=[]
