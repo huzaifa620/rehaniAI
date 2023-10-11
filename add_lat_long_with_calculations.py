@@ -3,7 +3,7 @@ from shapely.geometry import shape, Polygon, MultiPolygon, Point
 from geopy.distance import geodesic
 from concurrent.futures import ThreadPoolExecutor
 from shapely.validation import make_valid
-import os, json
+import os, json, math
 from datetime import datetime
 
 current_directory = os.getcwd()
@@ -83,7 +83,7 @@ def add_lat_long_with_calculations(df_concat):
         if isinstance(result["locationAddress"], str) and len(result["locationAddress"].split(" ")) > 1:
             location_info.append(result["locationAddress"])
         else:
-            location_info.extend([result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]])
+            location_info.extend(filter(lambda x: x is not None and not (isinstance(x, float) and math.isnan(x)), [result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]]))
 
         temp = ", ".join(filter(None, location_info))
         location = geolocator.geocode(temp, timeout=10)
