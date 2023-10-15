@@ -22,7 +22,7 @@ def booking_filter():
         hashIds.append(hashId)
     df19['rehaniID']=hashIds
 
-    df19['website'] = "booking.com"
+    df19['Website'] = "booking.com"
     df19.rename(columns={'title':'Title'}, inplace=True)
     df19['Agent']=None
     df19['Agent Contact']=None

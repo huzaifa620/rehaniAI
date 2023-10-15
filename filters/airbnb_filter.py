@@ -20,7 +20,7 @@ def airbnb_filter():
         hashIds.append(hashId)
     df10['rehaniID']=hashIds  
 
-    df10['website'] = "airbnb.com"
+    df10['Website'] = "airbnb.com"
     df10['localPrice'] = df10['price']
     df10['localCurrency'] = df10['currency']
     df10.rename(columns={'title':'Title'}, inplace=True)

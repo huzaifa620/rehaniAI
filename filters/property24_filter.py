@@ -23,7 +23,7 @@ def property24_filter():
         hashIds.append(hashId)
     df14['rehaniID']=hashIds
 
-    df14['website'] = "property24.com"
+    df14['Website'] = "property24.com"
     df14.rename(columns={'title':'Title'}, inplace=True)
     df14['Agent Email Address']=None
     df14['Agent Contact']=None
