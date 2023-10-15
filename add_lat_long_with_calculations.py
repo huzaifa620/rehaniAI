@@ -85,6 +85,7 @@ def add_lat_long_with_calculations(df_concat):
             location_info.extend(filter(lambda x: x is not None and not (isinstance(x, float) and math.isnan(x)), [result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]]))
 
         temp = ", ".join(filter(None, location_info))
+        print(temp)
         location = geolocator.geocode(temp, timeout=10)
 
         if location:
