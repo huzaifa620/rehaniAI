@@ -68,7 +68,6 @@ def process_geojson_feature(feature, point, result):
         else:
             return None, None, None, None, None
     except Exception as e:
-        print('here', e)
         return None, None, None, None, None
 
 
@@ -92,7 +91,7 @@ def add_lat_long_with_calculations(df_concat):
             latitude, longitude = location.latitude, location.longitude
             df_concat.at[ind, 'locationLat'] = latitude
             df_concat.at[ind, 'locationLon'] = longitude
-            print(location.latitude, " ----- ", location.longitude, mainCountry, result["locationCountry"])
+            print(location.latitude, " ----- ", location.longitude)
 
             if mainCountry != result["locationCountry"]:
                 mainCountry = result["locationCountry"]

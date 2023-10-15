@@ -42,8 +42,8 @@ def main():
 
     # df1 = ethiopianProperties_filter()
     # df2 = houseInRwanda_filter()
-    # df3 = seso_filter()
-    df4 = buyrentkenya_filter()
+    df3 = seso_filter()
+    # df4 = buyrentkenya_filter()
     # df5 = ghanaPropertyCentre_filter()
     # df6 = kenyaPropertyCentre_filter()
     # df7 = prophunt_filter()
