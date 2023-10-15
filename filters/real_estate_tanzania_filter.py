@@ -24,6 +24,7 @@ def real_estate_tanzania_filter():
         hashIds.append(hashId)
     df18['rehaniID']=hashIds
 
+    df18['Website']='realestatetanzania.com'
     df18.rename(columns={'propertyTitle':'Title'}, inplace=True)
     df18['agentNumber']=df18['agentNumber'].str.replace(' ','')
     df18.rename(columns={'agentNumber':'Agent Contact'}, inplace=True)

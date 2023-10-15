@@ -22,6 +22,7 @@ def lamudi_filter():
         hashIds.append(hashId)
     df11['rehaniID']=hashIds
 
+    df11['website'] = "lamudi"
     df11.rename(columns={'propertyTitle':'Title'}, inplace=True)
     df11.rename(columns={'agentNumber':'Agent Contact'}, inplace=True)
     df11.rename(columns={'agent':'Agent'}, inplace=True)

@@ -23,6 +23,7 @@ def propertypro_ng_filter():
         hashIds.append(hashId)
     df17['rehaniID']=hashIds
 
+    df17['Website']='propertypro.co.ng'
     df17.rename(columns={'title':'Title'}, inplace=True)
     df17.rename(columns={'agentNumber':'Agent Contact'}, inplace=True)
     df17.rename(columns={'agent':'Agent'}, inplace=True)

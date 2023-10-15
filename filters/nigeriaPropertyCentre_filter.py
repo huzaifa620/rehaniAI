@@ -24,6 +24,7 @@ def nigeriaPropertyCentre_filter():
         hashIds.append(hashId)
     df12['rehaniID']=hashIds  
 
+    df12['website'] = "nigeriapropertycenter.com"
     df12.rename(columns={'propertyTitle':'Title'}, inplace=True)
     df12.rename(columns={'agentNumber':'Agent Contact'}, inplace=True)
     df12.rename(columns={'agent':'Agent'}, inplace=True)
