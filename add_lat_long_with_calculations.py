@@ -85,13 +85,13 @@ def add_lat_long_with_calculations(df_concat):
             location_info.extend(filter(lambda x: x is not None and not (isinstance(x, float) and math.isnan(x)), [result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]]))
 
         temp = ", ".join(filter(None, location_info))
-        print(temp)
         location = geolocator.geocode(temp, timeout=10)
 
         if location:
             latitude, longitude = location.latitude, location.longitude
             df_concat.at[ind, 'locationLat'] = latitude
             df_concat.at[ind, 'locationLon'] = longitude
+            print(temp)
             print(location.latitude, " ----- ", location.longitude)
 
             if mainCountry != result["locationCountry"]:
@@ -122,7 +122,7 @@ def add_lat_long_with_calculations(df_concat):
                     df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
                     break
         else:
-            print("Could not geocode address:", result.get("locationAddress", ""))
+            print("Could not geocode address:", temp)
 
     def process_row(ind, result):
 
