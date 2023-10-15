@@ -77,52 +77,56 @@ def add_lat_long_with_calculations(df_concat):
     geolocator = Nominatim(user_agent="longLatApp")
 
     for ind, result in df_concat.iterrows():
-        location_info = []
+        try:
+            location_info = []
 
-        if isinstance(result["locationAddress"], str) and len(result["locationAddress"].split(" ")) > 1:
-            location_info.append(result["locationAddress"])
-        else:
-            location_info.extend(filter(lambda x: x is not None and not (isinstance(x, float) and math.isnan(x)), [result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]]))
+            if isinstance(result["locationAddress"], str) and len(result["locationAddress"].split(" ")) > 1:
+                location_info.append(result["locationAddress"])
+            else:
+                location_info.extend(filter(lambda x: x is not None and not (isinstance(x, float) and math.isnan(x)), [result.get(field, "") for field in ["locationNeighbourhood", "locationDistrict", "locationCity", "locationCountry"]]))
 
-        temp = ", ".join(filter(None, location_info))
-        location = geolocator.geocode(temp, timeout=10)
+            temp = ", ".join(filter(None, location_info))
+            location = geolocator.geocode(temp, timeout=10)
 
-        if location:
-            latitude, longitude = location.latitude, location.longitude
-            df_concat.at[ind, 'locationLat'] = latitude
-            df_concat.at[ind, 'locationLon'] = longitude
-            print(temp, result[""])
-            print(location.latitude, " ----- ", location.longitude)
+            if location:
+                latitude, longitude = location.latitude, location.longitude
+                df_concat.at[ind, 'locationLat'] = latitude
+                df_concat.at[ind, 'locationLon'] = longitude
+                print(temp, result[""])
+                print(location.latitude, " ----- ", location.longitude)
 
-            if mainCountry != result["locationCountry"]:
-                mainCountry = result["locationCountry"]
-                file_path = os.path.join(folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
-                with open(file_path, "r", encoding="utf-8") as file:
-                    json_data = json.load(file)
+                if mainCountry != result["locationCountry"]:
+                    mainCountry = result["locationCountry"]
+                    file_path = os.path.join(folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
+                    with open(file_path, "r", encoding="utf-8") as file:
+                        json_data = json.load(file)
 
-            point = Point(longitude, latitude)
+                point = Point(longitude, latitude)
 
-            for item in json_data.get('features', []):
-                geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
+                for item in json_data.get('features', []):
+                    geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
-                if geometry is not None:
-                    print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
-                    polygon_center = geometry.centroid
-                    distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
-                    area_sq_km = geometry.area * 111.32**2
-                    neighborhood_density = (len(df_concat) / area_sq_km) if area_sq_km else None
+                    if geometry is not None:
+                        print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
+                        polygon_center = geometry.centroid
+                        distance_km = geodesic((latitude, longitude), (polygon_center.y, polygon_center.x)).kilometers
+                        area_sq_km = geometry.area * 111.32**2
+                        neighborhood_density = (len(df_concat) / area_sq_km) if area_sq_km else None
 
-                    df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
-                    df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
-                    df_concat.at[ind, 'consolidatedNeighbourhood'] = result.get("locationNeighbourhood", consolidatedNeighbourhood)
-                    df_concat.at[ind, 'consolidatedState'] = consolidatedState
-                    df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
-                    df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
-                    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
-                    df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
-                    break
-        else:
-            print("Could not geocode address:", temp)
+                        df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
+                        df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
+                        df_concat.at[ind, 'consolidatedNeighbourhood'] = result.get("locationNeighbourhood", consolidatedNeighbourhood)
+                        df_concat.at[ind, 'consolidatedState'] = consolidatedState
+                        df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
+                        df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
+                        df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
+                        df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
+                        break
+            else:
+                print("Could not geocode address:", temp)
+
+        except Exception as e:
+            print('Skipping listing ...', e)
 
     def process_row(ind, result):
 
