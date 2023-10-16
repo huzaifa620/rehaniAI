@@ -42,8 +42,7 @@ def add_lat_long(df_concat):
         df_concat.at[ind, 'locationLat'] = latitude
         df_concat.at[ind, 'locationLon'] = longitude
 
-        address, lat, long = addr, latitude, longitude
-
+        #print(addr, latitude, longitude)
         # Update the description in the progress bar
         progress_bar.set_description(f'Adding latitude/longitude by processing addresses: {ind + 1}/{total_items}', refresh=True)
 
