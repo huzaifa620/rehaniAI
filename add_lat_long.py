@@ -35,7 +35,7 @@ def add_lat_long(df_concat):
     df_to_process = df_concat[df_concat["locationLat"].isna()]
 
     total_items = len(df_to_process)
-    progress_bar = tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
+    progress_bar = tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]')
 
     for ind, result in df_to_process.iterrows():
         addr, latitude, longitude = geocode_address(result)
@@ -44,7 +44,7 @@ def add_lat_long(df_concat):
 
         #print(addr, latitude, longitude)
         # Update the description in the progress bar
-        progress_bar.set_description(f'Adding latitude/longitude by processing addresses: {ind + 1}/{total_items}', refresh=True)
+        progress_bar.set_description(f'Adding latitude/longitude by processing addresses: {df_concat.at[ind, "locationLat"]}, {df_concat.at[ind, "locationLon"]}', refresh=True)
 
         # Update the progress bar
         progress_bar.update(1)

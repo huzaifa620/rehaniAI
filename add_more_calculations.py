@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from shapely.validation import make_valid
 import os, json, geopy
 from datetime import datetime
+from tqdm import tqdm
 
 current_directory = os.getcwd()
 folder_name = 'shape_files'
@@ -96,7 +97,7 @@ def add_more_calculations(df_concat):
                 geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
                 if geometry is not None:
-                    print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
+                    #print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
                     polygon_center = geometry.centroid
                     distance_km = geodesic((result["locationLon"], result["locationLat"]), (polygon_center.y, polygon_center.x)).kilometers
                     area_sq_km = geometry.area * 111.32**2
@@ -129,7 +130,7 @@ def add_more_calculations(df_concat):
             lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],
             axis=1
         )]
-        print(f'{len(listings_within_neighborhood)} neighbor(s) found')
+        #print(f'{len(listings_within_neighborhood)} neighbor(s) found')
         if not listings_within_neighborhood.empty:
             listings_within_neighborhood = listings_within_neighborhood[listings_within_neighborhood['localPrice'].apply(lambda x: isinstance(x, float))]
             neighborhood_avgPrice = listings_within_neighborhood['localPrice'].mean()
@@ -153,24 +154,29 @@ def add_more_calculations(df_concat):
                 df_concat.at[ind, 'listingDensity(listings/m)'] = listing_density
                 df_concat.at[ind, 'avgPriceInCircle'] = avg_price
 
+    total_items = len(df_concat)
     with ThreadPoolExecutor(max_workers=16) as executor:
-        futures = []
+        
+        with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar1:
+            futures = []
 
-        # Submit the first function
-        for ind, result in df_concat.iterrows():
-            futures.append(executor.submit(process_row, ind, result))
+            for ind, result in df_concat.iterrows():
+                futures.append(executor.submit(process_row, ind, result))
 
-        # Wait for the first function to complete
-        for future in futures:
-            future.result()
+            for future in futures:
+                future.result()
+                progress_bar1.set_description(f'Adding neighborhoods by processing latitude/longitude', refresh=True)
+                progress_bar1.update(1)
+        print('')
+        with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar2:
+            futures = []
 
-        # Submit the second function after the first one has completed
-        futures = []
-        for ind, result in df_concat.iterrows():
-            futures.append(executor.submit(process_row_general, ind, result))
+            for ind, result in df_concat.iterrows():
+                futures.append(executor.submit(process_row_general, ind, result))
 
-        # Wait for the second function to complete
-        for future in futures:
-            future.result()
+            for future in futures:
+                future.result()
+                progress_bar2.set_description(f'Finding neighbors and other related info in the processed data', refresh=True)
+                progress_bar2.update(1)
 
-    return df_concat
+        return df_concat
