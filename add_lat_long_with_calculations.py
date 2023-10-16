@@ -92,7 +92,7 @@ def add_lat_long_with_calculations(df_concat):
                 latitude, longitude = location.latitude, location.longitude
                 df_concat.at[ind, 'locationLat'] = latitude
                 df_concat.at[ind, 'locationLon'] = longitude
-                print(temp, result[""])
+                print(temp, f"{ind} out of {len(df_concat)}")
                 print(location.latitude, " ----- ", location.longitude)
 
                 if mainCountry != result["locationCountry"]:
