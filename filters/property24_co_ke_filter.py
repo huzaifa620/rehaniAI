@@ -10,10 +10,11 @@ def property24_co_ke_filter():
     dbname_1=get_data(databaseName)
 
     collection_name_1 = dbname_1['propertyDetails']
-    print(f'Collecting data of {databaseName}')
+    print(f'{"*"*40}\nCollecting data of {databaseName}')
     data_mongo=list(collection_name_1.find({},{'_id':False}))
     df15=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
-    print(f'Filtering data of {databaseName}')
+    print(f'Filtering data of {databaseName}\n{"*"*40}')
+
     df15['Website'] = "property24.co.ke"
     hashIds=[]
     for rawId in df15['url']:

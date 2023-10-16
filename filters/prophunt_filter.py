@@ -10,10 +10,10 @@ def prophunt_filter():
     databaseName='prophunt'
     dbname_1=get_data(databaseName)
     collection_name_1 = dbname_1['propertyDetails']
-    print(f'Collecting data of {databaseName}')
+    print(f'{"*"*40}\nCollecting data of {databaseName}')
     data_mongo=list(collection_name_1.find({},{'_id':False}))
     df7=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
-    print(f'Filtering data of {databaseName}')
+    print(f'Filtering data of {databaseName}\n{"*"*40}')
 
     hashIds=[]
     for rawId in df7['url']:
