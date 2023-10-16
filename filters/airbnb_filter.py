@@ -65,8 +65,8 @@ def airbnb_filter():
     df10.rename(columns={'location':'Location: Address'}, inplace=True)
     df10['Location: District']=None
     df10['Location: Neighbourhood']=None
-    df10.rename(columns={'longitude':'locationLon'}, inplace=True)
-    df10.rename(columns={'latitude':'locationLat'}, inplace=True)
+    df10.rename(columns={'longitude':'Location: Lon'}, inplace=True)
+    df10.rename(columns={'latitude':'Location: Lat'}, inplace=True)
     countries=[]
     for i in df10['Location: Address']:
         countries.append(i.split(',')[-1].strip())
