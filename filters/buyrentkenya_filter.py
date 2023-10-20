@@ -60,7 +60,90 @@ def buyrentkenya_filter():
     df4['Number of high end amenities (pool, gym, spa)']=highEndAmenities
     df4.rename(columns={'city':'Location: City'}, inplace=True)
     df4['Location: Country']='Kenya'
+    
     df4.rename(columns={'location':'Location: Address'}, inplace=True)
+    replacements = {
+        ', Area': '',
+        'Area, ': '',
+        ', Island': '',
+        'Island, ': '',
+        ', Zimmermann': '',
+        'Sukari, ': '',
+    }
+
+    def custom_replace(address):
+        if 'Mathenge' in address:
+            return 'General Mathenge, Westlands, Nairobi'
+        elif 'Konza' in address:
+            return 'Konza City, Machakos'
+        elif 'Kamulu' in address:
+            return 'Kamulu, Nairobi'
+        elif 'Joska' in address:
+            return 'Joska, Nairobi'
+        elif 'Kahawa' in address:
+            return 'Kahawa, Roysambu, Nairobi'
+        elif 'State' in address and 'House' in address:
+            return 'State House, Nairobi'
+        elif 'Cbd' in address:
+            return 'Nairobi Central Business District'
+        elif 'Dagoretti' in address and 'Corner' in address:
+            return 'Dagoretti Corner, Nairobi'
+        
+        elif 'Valley' in address and 'Arcade' in address:
+            return 'Valley Arcade, Nairobi'
+        elif 'Valley' in address and 'Spring' in address:
+            return 'Spring Valley, Westlands, Nairobi'
+
+        elif 'Ngumo' in address and 'Estate' in address:
+            return 'Ngumo Estate, Nairobi'
+        elif 'Hill' in address and 'Upper' in address:
+            return 'Upper Hill, Nairobi'
+        elif 'Lower' in address and 'Kabete' in address:
+            return 'Lower Kabete, Westlands, Nairobi'
+        
+        elif 'Thika' in address and 'Road' in address:
+            return 'Thika Road, Nairobi'
+        elif 'Naivasha' in address and 'Road' in address:
+            return 'Naivasha Road, Nairobi'
+        elif 'Kenyatta' in address and 'Road' in address:
+            return 'Kenyatta Road, Nairobi'
+        elif 'Rhapta' in address and 'Road' in address:
+            return 'Rhapta Road, Nairobi'
+        elif 'Kiambu' in address and 'Road' in address:
+            return 'Kiambu Road, Nairobi'
+        
+        elif 'Tatu' in address and 'Ruiru' in address:
+            return 'Tatu City, Ruiru, Kiambu'
+        elif 'Gikambura' in address and 'Kikuyu' in address:
+            return 'Gikambura, Kikuyu, Kiambu'
+        elif 'Rironi' in address and 'Limuru' in address:
+            return 'Rironi, Limuru, Kiambu'
+        elif 'Garden' in address and 'Estate' in address and 'Roysambu' in address:
+            return 'Garden Estate, Roysambu, Nairobi'
+        elif 'Ngumo' in address and 'Estate' in address:
+            return 'Ngumo Estate, Nairobi'
+        elif 'Mirema' in address and 'Roysambu' in address:
+            return 'Mirema, Roysambu, Nairobi'
+        elif 'Windsor' in address and 'Roysambu':
+            return 'Windsor, Roysambu, Nairobi'
+        
+        elif 'Lake' in address and 'View' in address:
+            return 'Lake View, Nairobi'
+        elif 'Mountain' in address and 'View' in address:
+            return 'Mountain View, Westlands, Nairobi'
+        
+        elif 'Brookside' in address and 'Westlands' in address:
+            return 'Brookside, Westlands, Nairobi'
+        elif 'Parklands' in address and 'Westlands' in address:
+            return 'Parklands, Westlands, Nairobi'
+        elif 'Hill' in address and 'View' in address:
+            return 'Hill, Westlands, Nairobi'
+
+        return address
+
+    df4['Location: Address'] = df4['Location: Address'].replace(replacements, regex=True)
+    df4['Location: Address'] = df4['Location: Address'].apply(custom_replace)
+
     df4['Location: District']=None
     conversion_factors = {'ft²': 1, 'm²': 10.7639, 'ac': 43560, 'ha': 107639}
     result = []
@@ -101,6 +184,7 @@ def buyrentkenya_filter():
     df4['Location: City'] = df4['Location: City'].str.replace('Kikuyu','Kiambu County')
     df4['Location: City'] = df4['Location: City'].str.replace('Eldoret','Uasin Gishu County')
     df4['Location: City'] = df4['Location: City'].str.replace("Murang'a County",'Muranga County')
+    df4['Location: City'] = df4['Location: City'].str.replace('Apartments', '').replace('Villas', '').replace('Houses', '').replace('Residential Land', '').replace('Commercial Land', '').replace('Commercial Property', '').replace('Bedsitters', '').replace('Townhouses', '').replace('Offices', '').replace('Warehouses', '').replace('Shops', '').replace('Land', '')
 
     cityGDP = []
     for item in df4['Location: City'].values:
