@@ -88,8 +88,18 @@ def add_more_calculations(df_concat):
             if mainCountry != result["locationCountry"]:
                 mainCountry = result["locationCountry"]
                 file_path = os.path.join(folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
-                with open(file_path, "r", encoding="utf-8") as file:
-                    json_data = json.load(file)
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as file:
+                        json_data = json.load(file)
+                except FileNotFoundError:
+                    df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
+                    df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
+                    df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
+                    df_concat.at[ind, 'consolidatedState'] = None
+                    df_concat.at[ind, 'distanceFromCenter(km)'] = None
+                    df_concat.at[ind, 'areaOfPolygon(km²)'] = None
+                    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
+                    df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
 
             point = Point(result["locationLon"], result["locationLat"])
 
@@ -112,16 +122,17 @@ def add_more_calculations(df_concat):
                     df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
                     df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
                     break
+                
         else:
 
-            df_concat.at[ind, 'consolidatedCountry'] = None
-            df_concat.at[ind, 'consolidatedCity'] = None
-            df_concat.at[ind, 'consolidatedNeighbourhood'] = None
+            df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
+            df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
+            df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
             df_concat.at[ind, 'consolidatedState'] = None
             df_concat.at[ind, 'distanceFromCenter(km)'] = None
             df_concat.at[ind, 'areaOfPolygon(km²)'] = None
             df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
-            df_concat.at[ind, 'location'] = None
+            df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
     
     def process_row_general(ind, result):
         df_concat.at[ind, 'lastUpdated'] = datetime.now()
