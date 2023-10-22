@@ -5,6 +5,7 @@ from shapely.validation import make_valid
 import os, json, geopy
 from datetime import datetime
 from tqdm import tqdm
+import numpy as np
 
 current_directory = os.getcwd()
 folder_name = 'shape_files'
@@ -100,6 +101,7 @@ def add_more_calculations(df_concat):
                     df_concat.at[ind, 'areaOfPolygon(km²)'] = None
                     df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
                     df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
+                    return
 
             point = Point(result["locationLon"], result["locationLat"])
 
@@ -107,7 +109,6 @@ def add_more_calculations(df_concat):
                 geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
                 if geometry is not None:
-                    #print(consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState)
                     polygon_center = geometry.centroid
                     distance_km = geodesic((result["locationLon"], result["locationLat"]), (polygon_center.y, polygon_center.x)).kilometers
                     area_sq_km = geometry.area * 111.32**2
@@ -122,9 +123,19 @@ def add_more_calculations(df_concat):
                     df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
                     df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
                     break
-                
+            else:
+                df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
+                df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
+                df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
+                df_concat.at[ind, 'consolidatedState'] = None
+                df_concat.at[ind, 'distanceFromCenter(km)'] = None
+                df_concat.at[ind, 'areaOfPolygon(km²)'] = None
+                df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
+                df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
+            
+            return
+        
         else:
-
             df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
             df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
             df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
@@ -133,14 +144,17 @@ def add_more_calculations(df_concat):
             df_concat.at[ind, 'areaOfPolygon(km²)'] = None
             df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
             df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
+            return
     
     def process_row_general(ind, result):
         df_concat.at[ind, 'lastUpdated'] = datetime.now()
         
-        listings_within_neighborhood = df_concat[df_concat.apply(
-            lambda row: row['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"],
-            axis=1
-        )]
+        listings_within_neighborhood = df_concat[
+            (df_concat['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"]) &
+            np.isfinite(df_concat['locationLat']) &
+            np.isfinite(df_concat['locationLon'])
+        ]
+
         #print(f'{len(listings_within_neighborhood)} neighbor(s) found')
         if not listings_within_neighborhood.empty:
             listings_within_neighborhood = listings_within_neighborhood[listings_within_neighborhood['localPrice'].apply(lambda x: isinstance(x, float))]

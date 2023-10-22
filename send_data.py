@@ -17,7 +17,7 @@ def send_data(df, databaseName, collectionName):
         dbname = client[databaseName]
         collection_name = dbname[collectionName]
 
-        with tqdm(total=len(mongo_insert_data), desc="Sending Data to MongoDB", position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]') as progress_bar:
+        with tqdm(total=len(mongo_insert_data), desc="Sending Data to MongoDB", position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar:
             for instance in mongo_insert_data:
                 try:
                     collection_name.update_one({'url': instance['url']}, {'$set': instance}, upsert=True)

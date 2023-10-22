@@ -34,25 +34,30 @@ def seso_filter():
     df3.rename(columns={'baths':'Baths'}, inplace=True)
     df3.rename(columns={'price':'Price'}, inplace=True)
     df3.rename(columns={'priceDiff':'Price Change'}, inplace=True)
-    df3['Location: Lat']=None
-    df3['Location: Lon']=None
+    df3.rename(columns={'longitude':'Location: Lon'}, inplace=True)
+    df3.rename(columns={'latitude':'Location: Lat'}, inplace=True)
     df3.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
     df3['Type (Rent, Sale, Vacation)'] = df3['Type (Rent, Sale, Vacation)'].str.replace('SALE','Sale')
     df3['Type (Rent, Sale, Vacation)'] = df3['Type (Rent, Sale, Vacation)'].str.replace('SOLD OUT','Sold')
 
-    usdToGhs=float(json.loads(convert('ghs', 'usd', 1))['amount'])
-    usdToNgn=float(json.loads(convert('ngn', 'usd', 1))['amount'])
-    prices=[]
-    for idx,item in enumerate(df3['Price'].values):
-        if item==None:
-            prices.append(None)    
+    usdToGhs = float(json.loads(convert('ghs', 'usd', 1))['amount'])
+    usdToNgn = float(json.loads(convert('ngn', 'usd', 1))['amount'])
+    prices = []
+
+    for idx, item in enumerate(df3['Price'].values):
+        if item == None:
+            prices.append(None)
         else:
-            if df3['currency'].values[idx]=='GHS':
-                item=item*usdToGhs
-            elif df3['currency'].values[idx]=='NGN':
-                item=item*usdToNgn
+            if df3['usdPrice'].values[idx] == 0:
+                if df3['currency'].values[idx] == 'GHS':
+                    item = item * usdToGhs
+                elif df3['currency'].values[idx] == 'NGN':
+                    item = item * usdToNgn
+            else:
+                item = df3['usdPrice'].values[idx]
             prices.append(item)
-    df3['Price']=prices
+
+    df3['Price'] = prices
 
     areaList=[]
     for i, area in enumerate(df3['area']):
@@ -105,8 +110,8 @@ def seso_filter():
     df3.rename(columns={'address':'Location: Address'}, inplace=True)
     df3['Location: Neighbourhood']=None
     df3['Location: District']=None
-    df3['Location: Country']='Ghana'
-    df3['Location: City']=None
+    df3['Location: Country']=df3['country']
+    df3['Location: City']=df3['city']
 
     cityGDP = []
     for item in df3['Location: City'].values:
