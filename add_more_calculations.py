@@ -80,6 +80,21 @@ def process_geojson_feature(feature, point, result):
     except Exception as e:
         return None, None, None, None, None
 
+def assignDefaultValues(df_concat, ind):
+    location_neighbourhood = df_concat.at[ind, 'locationNeighbourhood']
+    location_city = df_concat.at[ind, 'locationCity']
+    location_country = df_concat.at[ind, 'locationCountry']
+
+    df_concat.at[ind, 'location'] = ", ".join(filter(None, [location_neighbourhood, location_city, location_country]))
+    df_concat.at[ind, 'consolidatedCountry'] = location_country
+    df_concat.at[ind, 'consolidatedCity'] = location_city
+    df_concat.at[ind, 'consolidatedNeighbourhood'] = location_neighbourhood
+    df_concat.at[ind, 'consolidatedState'] = None
+    df_concat.at[ind, 'distanceFromCenter(km)'] = None
+    df_concat.at[ind, 'areaOfPolygon(km²)'] = None
+    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
+
+
 def add_more_calculations(df_concat):
 
     def process_row(ind, result):
@@ -93,14 +108,7 @@ def add_more_calculations(df_concat):
                     with open(file_path, 'r', encoding='utf-8') as file:
                         json_data = json.load(file)
                 except FileNotFoundError:
-                    df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
-                    df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
-                    df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
-                    df_concat.at[ind, 'consolidatedState'] = None
-                    df_concat.at[ind, 'distanceFromCenter(km)'] = None
-                    df_concat.at[ind, 'areaOfPolygon(km²)'] = None
-                    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
-                    df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
+                    assignDefaultValues(df_concat, ind)
                     return
 
             point = Point(result["locationLon"], result["locationLat"])
@@ -124,26 +132,12 @@ def add_more_calculations(df_concat):
                     df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
                     break
             else:
-                df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
-                df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
-                df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
-                df_concat.at[ind, 'consolidatedState'] = None
-                df_concat.at[ind, 'distanceFromCenter(km)'] = None
-                df_concat.at[ind, 'areaOfPolygon(km²)'] = None
-                df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
-                df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
+                assignDefaultValues(df_concat, ind)
             
             return
         
         else:
-            df_concat.at[ind, 'consolidatedCountry'] = df_concat.at[ind, 'locationCountry']
-            df_concat.at[ind, 'consolidatedCity'] = df_concat.at[ind, 'locationCity']
-            df_concat.at[ind, 'consolidatedNeighbourhood'] = df_concat.at[ind, 'locationNeighbourhood']
-            df_concat.at[ind, 'consolidatedState'] = None
-            df_concat.at[ind, 'distanceFromCenter(km)'] = None
-            df_concat.at[ind, 'areaOfPolygon(km²)'] = None
-            df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
-            df_concat.at[ind, 'location'] = f"{df_concat.at[ind, 'locationNeighbourhood']}, {df_concat.at[ind, 'locationCity']}, {df_concat.at[ind, 'locationCountry']}"
+            assignDefaultValues(df_concat, ind)
             return
     
     def process_row_general(ind, result):
