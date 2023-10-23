@@ -6,11 +6,7 @@ import os, json, geopy
 from datetime import datetime
 from tqdm import tqdm
 import numpy as np
-
-current_directory = os.getcwd()
-folder_name = 'shape_files'
-folder_path = os.path.join(current_directory, folder_name)
-file_path = os.path.join(folder_path, 'ETH.json')
+import threading
 
 countries = {
     'Ethiopia': 'ETH',
@@ -42,9 +38,7 @@ name2Countries = ('Democratic Republic of the Congo', 'Zambia', 'Zimbabwe', 'Mor
 name4Countries = ('Rwanda', 'Uganda')
 name2CityCountries = ('Uganda')
 
-mainCountry = 'Ethiopia'
-with open(file_path, 'r', encoding='utf-8') as file:
-    json_data = json.load(file)
+thread_local = threading.local()
 
 def process_geojson_feature(feature, point, result):
     try:
@@ -94,26 +88,33 @@ def assignDefaultValues(df_concat, ind):
     df_concat.at[ind, 'areaOfPolygon(km²)'] = None
     df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
 
-
 def add_more_calculations(df_concat):
 
     def process_row(ind, result):
-        global folder_path, json_data, mainCountry, countries, name2Countries, name4Countries, name2CityCountries
+    
+        if not hasattr(thread_local, 'mainCountry'):
+            thread_local.mainCountry = "Ethiopia"
+            current_directory = os.getcwd()
+            folder_name = 'shape_files'
+            thread_local.folder_path = os.path.join(current_directory, folder_name)
+            file_path = os.path.join(thread_local.folder_path, 'ETH.json')
+            with open(file_path, 'r', encoding='utf-8') as file:
+                thread_local.json_data = json.load(file)
 
         if result["locationLat"]:
-            if mainCountry != result["locationCountry"]:
-                mainCountry = result["locationCountry"]
-                file_path = os.path.join(folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
+            if thread_local.mainCountry != result["locationCountry"]:
+                thread_local.mainCountry = result["locationCountry"]
+                file_path = os.path.join(thread_local.folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
                 try:
                     with open(file_path, 'r', encoding='utf-8') as file:
-                        json_data = json.load(file)
+                        thread_local.json_data = json.load(file)
                 except FileNotFoundError:
                     assignDefaultValues(df_concat, ind)
                     return
 
             point = Point(result["locationLon"], result["locationLat"])
 
-            for item in json_data.get('features', []):
+            for item in thread_local.json_data.get('features', []):
                 geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
                 if geometry is not None:
@@ -145,8 +146,7 @@ def add_more_calculations(df_concat):
         
         listings_within_neighborhood = df_concat[
             (df_concat['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"]) &
-            np.isfinite(df_concat['locationLat']) &
-            np.isfinite(df_concat['locationLon'])
+            np.isfinite(df_concat['locationLat']) & np.isfinite(df_concat['locationLon'])
         ]
 
         #print(f'{len(listings_within_neighborhood)} neighbor(s) found')
@@ -175,7 +175,7 @@ def add_more_calculations(df_concat):
 
     total_items = len(df_concat)
     with ThreadPoolExecutor(max_workers=16) as executor:
-        
+
         with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar1:
             futures = []
 
@@ -187,6 +187,7 @@ def add_more_calculations(df_concat):
                 progress_bar1.set_description(f'Adding neighborhoods by processing latitude/longitude', refresh=True)
                 progress_bar1.update(1)
         print('')
+        
         with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar2:
             futures = []
 
