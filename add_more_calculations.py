@@ -6,7 +6,8 @@ import os, json, geopy
 from datetime import datetime
 from tqdm import tqdm
 import numpy as np
-import threading
+import threading, math, tenacity
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 countries = {
     'Ethiopia': 'ETH',
@@ -90,6 +91,7 @@ def assignDefaultValues(df_concat, ind):
 
 def add_more_calculations(df_concat):
 
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
     def process_row(ind, result):
     
         if not hasattr(thread_local, 'mainCountry'):
@@ -101,7 +103,7 @@ def add_more_calculations(df_concat):
             with open(file_path, 'r', encoding='utf-8') as file:
                 thread_local.json_data = json.load(file)
 
-        if result["locationLat"]:
+        if math.isfinite(result["locationLat"]) and math.isfinite(result["locationLon"]):
             if thread_local.mainCountry != result["locationCountry"]:
                 thread_local.mainCountry = result["locationCountry"]
                 file_path = os.path.join(thread_local.folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
@@ -141,6 +143,7 @@ def add_more_calculations(df_concat):
             assignDefaultValues(df_concat, ind)
             return
     
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
     def process_row_general(ind, result):
         df_concat.at[ind, 'lastUpdated'] = datetime.now()
         
@@ -157,10 +160,11 @@ def add_more_calculations(df_concat):
 
             # Calculate listing density within a 500m radius
             listings_within_radius = listings_within_neighborhood[listings_within_neighborhood.apply(
-                lambda row: geopy.distance.distance(
-                    (row['locationLat'], row['locationLon']),
-                    (result["locationLat"], result["locationLon"])
-                ).m <= 500,
+                lambda row: not (math.isnan(row['locationLat']) or math.isnan(row['locationLon'])) and
+                    geopy.distance.distance(
+                        (row['locationLat'], row['locationLon']),
+                        (result["locationLat"], result["locationLon"])
+                    ).m <= 500 if not (math.isnan(result["locationLat"]) or math.isnan(result["locationLon"])) else False,
                 axis=1
             )]
 
@@ -174,29 +178,29 @@ def add_more_calculations(df_concat):
                 df_concat.at[ind, 'avgPriceInCircle'] = avg_price
 
     total_items = len(df_concat)
-    with ThreadPoolExecutor(max_workers=16) as executor:
-
+    with ThreadPoolExecutor(max_workers=16) as executor1:
         with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar1:
-            futures = []
+            futures1 = []
 
             for ind, result in df_concat.iterrows():
-                futures.append(executor.submit(process_row, ind, result))
+                futures1.append(executor1.submit(process_row, ind, result))
 
-            for future in futures:
+            for future in futures1:
                 future.result()
                 progress_bar1.set_description(f'Adding neighborhoods by processing latitude/longitude', refresh=True)
                 progress_bar1.update(1)
         print('')
-        
+
+    with ThreadPoolExecutor(max_workers=1) as executor2:
         with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar2:
-            futures = []
+            futures2 = []
 
             for ind, result in df_concat.iterrows():
-                futures.append(executor.submit(process_row_general, ind, result))
+                futures2.append(executor2.submit(process_row_general, ind, result))
 
-            for future in futures:
+            for future in futures2:
                 future.result()
                 progress_bar2.set_description(f'Finding neighbors and other related info in the processed data', refresh=True)
                 progress_bar2.update(1)
 
-        return df_concat
+    return df_concat
