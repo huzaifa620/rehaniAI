@@ -137,7 +137,7 @@ def seso_filter():
             populationGrowthRate.append(None)
     df3['City Population Growth Rate']=populationGrowthRate
 
-    df3.drop(['features','currency','propertyId','area','unitsAvailable', 'country'], axis=1,inplace=True)
+    df3.drop(['features','currency','propertyId','area','unitsAvailable', 'country', 'usdPrice'], axis=1,inplace=True)
     df3 = df3.reindex(sorted(df3.columns), axis=1)
 
     return df3

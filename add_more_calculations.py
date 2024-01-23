@@ -1,12 +1,10 @@
 from shapely.geometry import shape, Point
-from geopy.distance import geodesic
 from concurrent.futures import ThreadPoolExecutor
 from shapely.validation import make_valid
-import os, json, geopy
+import os, json
 from datetime import datetime
 from tqdm import tqdm
-import numpy as np
-import threading, math, tenacity
+import threading, math
 from tenacity import retry, stop_after_attempt, wait_fixed
 
 countries = {
@@ -85,9 +83,6 @@ def assignDefaultValues(df_concat, ind):
     df_concat.at[ind, 'consolidatedCity'] = location_city
     df_concat.at[ind, 'consolidatedNeighbourhood'] = location_neighbourhood
     df_concat.at[ind, 'consolidatedState'] = None
-    df_concat.at[ind, 'distanceFromCenter(km)'] = None
-    df_concat.at[ind, 'areaOfPolygon(km²)'] = None
-    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = None
 
 def add_more_calculations(df_concat):
 
@@ -120,18 +115,10 @@ def add_more_calculations(df_concat):
                 geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)
 
                 if geometry is not None:
-                    polygon_center = geometry.centroid
-                    distance_km = geodesic((result["locationLon"], result["locationLat"]), (polygon_center.y, polygon_center.x)).kilometers
-                    area_sq_km = geometry.area * 111.32**2
-                    neighborhood_density = (len(df_concat) / area_sq_km) if area_sq_km else None
-
                     df_concat.at[ind, 'consolidatedCountry'] = consolidatedCountry
                     df_concat.at[ind, 'consolidatedCity'] = consolidatedCity
                     df_concat.at[ind, 'consolidatedNeighbourhood'] = consolidatedNeighbourhood
                     df_concat.at[ind, 'consolidatedState'] = consolidatedState
-                    df_concat.at[ind, 'distanceFromCenter(km)'] = distance_km
-                    df_concat.at[ind, 'areaOfPolygon(km²)'] = area_sq_km
-                    df_concat.at[ind, 'neighborhoodDensity(listings/km²)'] = neighborhood_density
                     df_concat.at[ind, 'location'] = f"{consolidatedNeighbourhood}, {consolidatedCity}, {consolidatedCountry}"
                     break
             else:
@@ -142,41 +129,11 @@ def add_more_calculations(df_concat):
         else:
             assignDefaultValues(df_concat, ind)
             return
-    
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
-    def process_row_general(ind, result):
-        df_concat.at[ind, 'lastUpdated'] = datetime.now()
         
-        listings_within_neighborhood = df_concat[
-            (df_concat['consolidatedNeighbourhood'] == result["consolidatedNeighbourhood"]) &
-            np.isfinite(df_concat['locationLat']) & np.isfinite(df_concat['locationLon'])
-        ]
-
-        #print(f'{len(listings_within_neighborhood)} neighbor(s) found')
-        if not listings_within_neighborhood.empty:
-            listings_within_neighborhood = listings_within_neighborhood[listings_within_neighborhood['localPrice'].apply(lambda x: isinstance(x, float))]
-            neighborhood_avgPrice = listings_within_neighborhood['localPrice'].mean()
-            df_concat.at[ind, 'avgPriceInNeighborhood'] = neighborhood_avgPrice
-
-            # Calculate listing density within a 500m radius
-            listings_within_radius = listings_within_neighborhood[listings_within_neighborhood.apply(
-                lambda row: not (math.isnan(row['locationLat']) or math.isnan(row['locationLon'])) and
-                    geopy.distance.distance(
-                        (row['locationLat'], row['locationLon']),
-                        (result["locationLat"], result["locationLon"])
-                    ).m <= 500 if not (math.isnan(result["locationLat"]) or math.isnan(result["locationLon"])) else False,
-                axis=1
-            )]
-
-            if not listings_within_radius.empty:
-                listing_density = len(listings_within_radius) / 500
-
-                listings_within_radius = listings_within_radius[listings_within_radius['localPrice'].apply(lambda x: isinstance(x, float))]
-                avg_price = listings_within_radius['localPrice'].mean()
-
-                df_concat.at[ind, 'listingDensity(listings/m)'] = listing_density
-                df_concat.at[ind, 'avgPriceInCircle'] = avg_price
-
+    # cumulative price
+    # last updated
+    # if no date listed, use today
+    
     total_items = len(df_concat)
     with ThreadPoolExecutor(max_workers=16) as executor1:
         with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar1:
@@ -189,18 +146,5 @@ def add_more_calculations(df_concat):
                 future.result()
                 progress_bar1.set_description(f'Adding neighborhoods by processing latitude/longitude', refresh=True)
                 progress_bar1.update(1)
-        print('')
-
-    with ThreadPoolExecutor(max_workers=1) as executor2:
-        with tqdm(total=total_items, position=0, leave=True, bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}/{remaining}]') as progress_bar2:
-            futures2 = []
-
-            for ind, result in df_concat.iterrows():
-                futures2.append(executor2.submit(process_row_general, ind, result))
-
-            for future in futures2:
-                future.result()
-                progress_bar2.set_description(f'Finding neighbors and other related info in the processed data', refresh=True)
-                progress_bar2.update(1)
 
     return df_concat

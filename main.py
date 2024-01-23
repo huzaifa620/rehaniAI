@@ -32,7 +32,7 @@ project_root = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, project_root)
 
 
-finalDatabaseName='rehaniAIData'
+finalDatabaseName='test'
 collectionName='data'
 with open('columns.json', 'r') as json_file:
     column_dict = json.load(json_file)
