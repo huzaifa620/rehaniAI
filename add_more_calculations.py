@@ -88,7 +88,9 @@ def add_more_calculations(df_concat):
 
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(1))
     def process_row(ind, result):
-    
+        
+        df_concat.at[ind, 'lastUpdated'] = datetime.now().date().strftime("%Y-%m-%d")
+        df_concat.at[ind, 'dateAdded'] = datetime.strptime(result['dateAdded'], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d")
         if not hasattr(thread_local, 'mainCountry'):
             thread_local.mainCountry = "Ethiopia"
             current_directory = os.getcwd()
@@ -98,7 +100,7 @@ def add_more_calculations(df_concat):
             with open(file_path, 'r', encoding='utf-8') as file:
                 thread_local.json_data = json.load(file)
 
-        if math.isfinite(result["locationLat"]) and math.isfinite(result["locationLon"]):
+        if (result["locationLat"] or result["locationLon"]):
             if thread_local.mainCountry != result["locationCountry"]:
                 thread_local.mainCountry = result["locationCountry"]
                 file_path = os.path.join(thread_local.folder_path, f'{countries.get(result["locationCountry"], result["locationCountry"])}.json')
@@ -109,7 +111,8 @@ def add_more_calculations(df_concat):
                     assignDefaultValues(df_concat, ind)
                     return
 
-            point = Point(result["locationLon"], result["locationLat"])
+            longitude, latitude = str(result["locationLon"]).replace(',', ''), str(result["locationLat"]).replace(',', '')
+            point = Point(longitude, latitude)
 
             for item in thread_local.json_data.get('features', []):
                 geometry, consolidatedCountry, consolidatedCity, consolidatedNeighbourhood, consolidatedState = process_geojson_feature(item, point, result)

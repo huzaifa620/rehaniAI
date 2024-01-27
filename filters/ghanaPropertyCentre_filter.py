@@ -39,6 +39,7 @@ def ghanaPropertyCentre_filter():
     # daysOnMarket=(today - df5['addedOn'].values) / np.timedelta64(1, 'D')
     # daysOnMarket=daysOnMarket.astype('int')
     # df5['Days on Market']=daysOnMarket
+    df5.rename(columns={'addedOn':'dateAdded'}, inplace=True)
     df5['Occupancy']=None
     df5['Number of Guests']=None
     pricingCriteria=[]

@@ -39,6 +39,7 @@ def kenyaPropertyCentre_filter():
     daysOnMarket=(today - df6['addedOn'].values) / np.timedelta64(1, 'D')
     daysOnMarket=daysOnMarket.astype('int')
     df6['Days on Market']=daysOnMarket
+    df6.rename(columns={'addedOn':'dateAdded'}, inplace=True)
     df6['Occupancy']=None
     df6['Number of Guests']=None  
     df6['Number of amenities']=None
@@ -136,7 +137,7 @@ def kenyaPropertyCentre_filter():
             populationGrowthRate.append(None)
     df6['City Population Growth Rate']=populationGrowthRate
 
-    df6.drop(['propertyId','addedOn','coveredArea','currency','lastUpdated','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
+    df6.drop(['propertyId','coveredArea','currency','lastUpdated','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
     df6 = df6.reindex(sorted(df6.columns), axis=1)
 
     return df6

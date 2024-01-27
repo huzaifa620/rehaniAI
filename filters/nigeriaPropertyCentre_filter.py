@@ -40,6 +40,7 @@ def nigeriaPropertyCentre_filter():
     daysOnMarket=(today - df12['addedOn'].values) / np.timedelta64(1, 'D')
     daysOnMarket=daysOnMarket.astype('int')
     df12['Days on Market']=daysOnMarket
+    df12.rename(columns={'addedOn':'dateAdded'}, inplace=True)
     df12['Occupancy']=None
     df12['Number of Guests']=None  
     df12['Number of amenities']=None
@@ -145,7 +146,7 @@ def nigeriaPropertyCentre_filter():
             populationGrowthRate.append(None)
     df12['City Population Growth Rate']=populationGrowthRate
 
-    df12.drop(['propertyId','addedOn','coveredArea','currency','lastUpdated','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
+    df12.drop(['propertyId','coveredArea','currency','lastUpdated','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
     df12 = df12.reindex(sorted(df12.columns), axis=1)
 
     return df12
