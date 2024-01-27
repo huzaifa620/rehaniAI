@@ -14,13 +14,13 @@ def seso_filter():
     df3=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df3['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df3['rehaniID']=hashIds
+    # hashIds=[]
+    # for rawId in df3['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df3['rehaniID']=hashIds
 
     df3['Website']='seso.global'
     df3.rename(columns={'propertyName':'Title'}, inplace=True)

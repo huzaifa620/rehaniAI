@@ -14,13 +14,13 @@ def houseInRwanda_filter():
     df2=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df2['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df2['RehaniID']=hashIds  
+    # hashIds=[]
+    # for rawId in df2['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df2['RehaniID']=hashIds  
     df2['Website']='houseinrwanda.com'
     df2.rename(columns={'propertyTitle':'Title'}, inplace=True)
     df2.rename(columns={'advertType':'Type (Rent, Sale, Vacation)'}, inplace=True)
@@ -45,7 +45,7 @@ def houseInRwanda_filter():
     df2.rename(columns={'beds':'Beds'}, inplace=True)
     df2.rename(columns={'baths':'Baths'}, inplace=True)
     df2.rename(columns={'price':'Price'}, inplace=True)
-    df2.rename(columns={'priceDiff':'Price Change'}, inplace=True)
+    #df2.rename(columns={'priceDiff':'Price Change'}, inplace=True)
     df2['Building Security']=None
     df2['Location: Lat']=None
     df2['Location: Lon']=None

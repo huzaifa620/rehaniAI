@@ -90,7 +90,8 @@ def add_more_calculations(df_concat):
     def process_row(ind, result):
         
         df_concat.at[ind, 'lastUpdated'] = datetime.now().date().strftime("%Y-%m-%d")
-        df_concat.at[ind, 'dateAdded'] = datetime.strptime(result['dateAdded'], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d")
+        df_concat.at[ind, 'dateAdded'] = datetime.strptime(result['dateAdded'], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d") if isinstance(result['dateAdded'], str) else datetime.now().date().strftime("%Y-%m-%d")
+        
         if not hasattr(thread_local, 'mainCountry'):
             thread_local.mainCountry = "Ethiopia"
             current_directory = os.getcwd()

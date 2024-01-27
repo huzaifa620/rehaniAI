@@ -70,7 +70,7 @@ if __name__ == "__main__":
     df_concat = main()
     df_concat['Location: City'] = df_concat['Location: City'].str.replace('\d+', '').str.strip().str.replace('County', '')
     df_concat = df_concat.rename(columns=column_dict)
-    df_concat['rehaniID'] = df_concat['rehaniID'].astype(str)
+    #df_concat['rehaniID'] = df_concat['rehaniID'].astype(str)
     df_concat = df_concat.sort_values(by='locationCountry').reset_index(drop=True)
     print('')
     df_concat = add_lat_long(df_concat)
