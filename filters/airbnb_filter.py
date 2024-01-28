@@ -12,13 +12,13 @@ def airbnb_filter():
     df10=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df10['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df10['rehaniID']=hashIds  
+    # hashIds=[]
+    # for rawId in df10['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df10['rehaniID']=hashIds  
 
     df10['Website'] = "airbnb.com"
     df10['localPrice'] = df10['price']

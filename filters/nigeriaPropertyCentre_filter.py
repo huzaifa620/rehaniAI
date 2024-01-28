@@ -16,13 +16,13 @@ def nigeriaPropertyCentre_filter():
     df12=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df12['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df12['rehaniID']=hashIds  
+    # hashIds=[]
+    # for rawId in df12['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df12['rehaniID']=hashIds  
 
     df12['Website'] = "nigeriapropertycenter.com"
     df12.rename(columns={'propertyTitle':'Title'}, inplace=True)
@@ -36,10 +36,10 @@ def nigeriaPropertyCentre_filter():
     df12['listingType']=df12['listingType'].str.replace('For ','')
     df12['listingType']=df12['listingType'].where(pd.notnull(df12['listingType']), None)
     df12.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
-    today = np.datetime64('today')
-    daysOnMarket=(today - df12['addedOn'].values) / np.timedelta64(1, 'D')
-    daysOnMarket=daysOnMarket.astype('int')
-    df12['Days on Market']=daysOnMarket
+    # today = np.datetime64('today')
+    # daysOnMarket=(today - df12['addedOn'].values) / np.timedelta64(1, 'D')
+    # daysOnMarket=daysOnMarket.astype('int')
+    # df12['Days on Market']=daysOnMarket
     df12.rename(columns={'addedOn':'dateAdded'}, inplace=True)
     df12['Occupancy']=None
     df12['Number of Guests']=None  
@@ -87,7 +87,7 @@ def nigeriaPropertyCentre_filter():
     df12['pricingCriteria']=pricingCriteria
     df12.rename(columns={'pricingCriteria':'Price criteria'}, inplace=True)
     df12['priceDiff']=prices
-    df12.rename(columns={'priceDiff':'Price Change'}, inplace=True)
+    # df12.rename(columns={'priceDiff':'Price Change'}, inplace=True)
     internalArea=[]
     for item in df12['size']:
         if item==None:

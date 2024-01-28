@@ -15,13 +15,13 @@ def ghanaPropertyCentre_filter():
     df5=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df5['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df5['rehaniID']=hashIds  
+    # hashIds=[]
+    # for rawId in df5['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df5['rehaniID']=hashIds  
 
     df5['Website']='ghanapropertycentre.com'
     df5.rename(columns={'propertyTitle':'Title'}, inplace=True)
@@ -35,7 +35,7 @@ def ghanaPropertyCentre_filter():
     df5['listingType']=df5['listingType'].str.replace('For ','')
     df5['listingType']=df5['listingType'].where(pd.notnull(df5['listingType']), None)
     df5.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
-    today = np.datetime64('today')
+    # today = np.datetime64('today')
     # daysOnMarket=(today - df5['addedOn'].values) / np.timedelta64(1, 'D')
     # daysOnMarket=daysOnMarket.astype('int')
     # df5['Days on Market']=daysOnMarket

@@ -11,13 +11,13 @@ def ethiopianProperties_filter():
     df1=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df1['url']:
-        hashId=hash(rawId)
-        if hashId < 0:
-            hashId = int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df1['rehaniID']=hashIds
+    # hashIds=[]
+    # for rawId in df1['url']:
+    #     hashId=hash(rawId)
+    #     if hashId < 0:
+    #         hashId = int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df1['rehaniID']=hashIds
     df1['Website']='ethiopianproperties.com'
     df1.rename(columns={'propertyTitle':'Title'}, inplace=True)
     df1.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
@@ -61,7 +61,7 @@ def ethiopianProperties_filter():
     df1['localCurrency'] = 'USD'
 
     df1.rename(columns={'price':'Price'}, inplace=True)
-    df1.rename(columns={'priceDiff':'Price Change'}, inplace=True)
+    # df1.rename(columns={'priceDiff':'Price Change'}, inplace=True)
     df1['Price per s.f.']=df1['Price']/df1['Internal Area (s.f)']
     
     amenities=[]

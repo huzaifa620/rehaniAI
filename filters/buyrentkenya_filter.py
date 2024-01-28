@@ -16,13 +16,13 @@ def buyrentkenya_filter():
     df4=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
     
-    hashIds=[]
-    for rawId in df4['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df4['rehaniID']=hashIds
+    # hashIds=[]
+    # for rawId in df4['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df4['rehaniID']=hashIds
 
     df4['Website']='buyrentkenya.com'
     df4.rename(columns={'title':'Title'}, inplace=True)
@@ -167,13 +167,13 @@ def buyrentkenya_filter():
     df4.rename(columns={'price':'Price'}, inplace=True)
     df4['Price per s.f.']=df4['Price']/df4['Internal Area (s.f)']
     df4['priceDiff']=df4['priceDiff']*kesToUsd
-    df4.rename(columns={'priceDiff':'Price Change'}, inplace=True)
     df4['Price criteria']=None
     df4.rename(columns={'suburb':'Location: Neighbourhood'}, inplace=True)
     today = np.datetime64('today')
     daysOnMarket=(today - df4['dateListed'].values) / np.timedelta64(1, 'D')
     daysOnMarket=daysOnMarket.astype('int')
     df4['Days on Market']=daysOnMarket
+    df4.rename(columns={'dateListed':'dateAdded'}, inplace=True)
 
     df4['Location: City'] = df4['Location: City'].str.replace('Nyali','Mombasa')
     df4['Location: City'] = df4['Location: City'].str.replace('Westlands','Nairobi')
@@ -210,7 +210,7 @@ def buyrentkenya_filter():
             populationGrowthRate.append(None)
     df4['City Population Growth Rate']=populationGrowthRate
 
-    df4.drop(['amenities','currency','propertyId','dateListed','marketPriceHigher','floors','marketPriceLower','numberOfUnits','projectPriceHigher','projectPriceLower','similarPropertiesInfo'], axis=1,inplace=True)
+    df4.drop(['amenities','currency','propertyId','marketPriceHigher','floors','marketPriceLower','numberOfUnits','projectPriceHigher','projectPriceLower','similarPropertiesInfo'], axis=1,inplace=True)
     df4 = df4.reindex(sorted(df4.columns), axis=1)
 
     return df4

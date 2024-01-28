@@ -16,13 +16,13 @@ def real_estate_tanzania_filter():
     df18=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df18['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df18['rehaniID']=hashIds
+    # hashIds=[]
+    # for rawId in df18['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df18['rehaniID']=hashIds
 
     df18['Website']='realestatetanzania.com'
     df18.rename(columns={'propertyTitle':'Title'}, inplace=True)
@@ -52,6 +52,7 @@ def real_estate_tanzania_filter():
     df18['Days on Market']=daysOnMarket
     df18.rename(columns={'propertyType':'Housing Type'}, inplace=True)
     tzsToUsd=float(json.loads(convert('tzs', 'usd', 1))['amount'])
+    df18.rename(columns={'dateUpdated':'dateAdded'}, inplace=True)
 
     df18['localPrice'] = df18['price']
     df18['localCurrency'] = df18['currency']
@@ -68,7 +69,7 @@ def real_estate_tanzania_filter():
             item=item*tzsToUsd     
         prices.append(item)
     df18['priceDiff']=prices
-    df18.rename(columns={'priceDiff':'Price Change'}, inplace=True)
+    #df18.rename(columns={'priceDiff':'Price Change'}, inplace=True)
     converted_size=[]
     for i in df18['size']:
         if str(i)=='nan' or i==None:
@@ -156,7 +157,7 @@ def real_estate_tanzania_filter():
             populationGrowthRate.append(None)
     df18['City Population Growth Rate']=populationGrowthRate
 
-    df18.drop(["propertyId","country","currency","dateUpdated","location","pricingCriteria","size","state"], axis=1,inplace=True)
+    df18.drop(["propertyId","currency","location","pricingCriteria","size","state"], axis=1,inplace=True)
     df18 = df18.reindex(sorted(df18.columns), axis=1)
 
     return df18

@@ -15,13 +15,13 @@ def kenyaPropertyCentre_filter():
     df6=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df6['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df6['rehaniID']=hashIds
+    # hashIds=[]
+    # for rawId in df6['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df6['rehaniID']=hashIds
 
     df6['Website']='kenyapropertycentre.com'
     df6.rename(columns={'propertyTitle':'Title'}, inplace=True)
@@ -84,7 +84,7 @@ def kenyaPropertyCentre_filter():
     df6['pricingCriteria']=pricingCriteria
     df6.rename(columns={'pricingCriteria':'Price criteria'}, inplace=True)
     df6['priceDiff']=prices
-    df6.rename(columns={'priceDiff':'Price Change'}, inplace=True)
+    # df6.rename(columns={'priceDiff':'Price Change'}, inplace=True)
     internalArea=[]
     for item in df6['size']:
         if item==None:
