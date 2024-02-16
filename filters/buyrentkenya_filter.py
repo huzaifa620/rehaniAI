@@ -169,10 +169,10 @@ def buyrentkenya_filter():
     df4['priceDiff']=df4['priceDiff']*kesToUsd
     df4['Price criteria']=None
     df4.rename(columns={'suburb':'Location: Neighbourhood'}, inplace=True)
-    today = np.datetime64('today')
-    daysOnMarket=(today - df4['dateListed'].values) / np.timedelta64(1, 'D')
-    daysOnMarket=daysOnMarket.astype('int')
-    df4['Days on Market']=daysOnMarket
+    # today = np.datetime64('today')
+    # daysOnMarket=(today - df4['dateListed'].values) / np.timedelta64(1, 'D')
+    # daysOnMarket=daysOnMarket.astype('int')
+    # df4['Days on Market']=daysOnMarket
     df4.rename(columns={'dateListed':'dateAdded'}, inplace=True)
 
     df4['Location: City'] = df4['Location: City'].str.replace('Nyali','Mombasa')

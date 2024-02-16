@@ -35,10 +35,10 @@ def kenyaPropertyCentre_filter():
     df6['listingType']=df6['listingType'].str.replace('For ','')
     df6['listingType']=df6['listingType'].where(pd.notnull(df6['listingType']), None)
     df6.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
-    today = np.datetime64('today')
-    daysOnMarket=(today - df6['addedOn'].values) / np.timedelta64(1, 'D')
-    daysOnMarket=daysOnMarket.astype('int')
-    df6['Days on Market']=daysOnMarket
+    # today = np.datetime64('today')
+    # daysOnMarket=(today - df6['addedOn'].values) / np.timedelta64(1, 'D')
+    # daysOnMarket=daysOnMarket.astype('int')
+    # df6['Days on Market']=daysOnMarket
     df6.rename(columns={'addedOn':'dateAdded'}, inplace=True)
     df6['Occupancy']=None
     df6['Number of Guests']=None  

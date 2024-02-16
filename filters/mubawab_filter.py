@@ -12,13 +12,13 @@ def mubawab_filter():
     df13=pd.DataFrame(data_mongo,columns=data_mongo[0].keys())
     print(f'Filtering data of {databaseName}\n{"*"*40}')
 
-    hashIds=[]
-    for rawId in df13['url']:
-        hashId=hash(rawId)
-        if hashId<0:
-            hashId=int(str(hashId).replace('-','1'))
-        hashIds.append(hashId)
-    df13['rehaniID']=hashIds  
+    # hashIds=[]
+    # for rawId in df13['url']:
+    #     hashId=hash(rawId)
+    #     if hashId<0:
+    #         hashId=int(str(hashId).replace('-','1'))
+    #     hashIds.append(hashId)
+    # df13['rehaniID']=hashIds  
 
     def convert_to_sqft(area):
         if area is None:

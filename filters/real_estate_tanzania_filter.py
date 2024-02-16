@@ -46,10 +46,10 @@ def real_estate_tanzania_filter():
     df18['listingType']=df18['listingType'].replace('Not Available ',None)
     df18.rename(columns={'listingType':'Type (Rent, Sale, Vacation)'}, inplace=True)
 
-    today = np.datetime64('today')
-    daysOnMarket=(today - df18['dateUpdated'].values) / np.timedelta64(1, 'D')
-    daysOnMarket=daysOnMarket.astype('int')
-    df18['Days on Market']=daysOnMarket
+    # today = np.datetime64('today')
+    # daysOnMarket=(today - df18['dateUpdated'].values) / np.timedelta64(1, 'D')
+    # daysOnMarket=daysOnMarket.astype('int')
+    # df18['Days on Market']=daysOnMarket
     df18.rename(columns={'propertyType':'Housing Type'}, inplace=True)
     tzsToUsd=float(json.loads(convert('tzs', 'usd', 1))['amount'])
     df18.rename(columns={'dateUpdated':'dateAdded'}, inplace=True)

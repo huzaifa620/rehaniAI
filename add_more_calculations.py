@@ -92,6 +92,8 @@ def add_more_calculations(df_concat):
         df_concat.at[ind, 'lastUpdated'] = datetime.now().date().strftime("%Y-%m-%d")
         try:
             df_concat.at[ind, 'dateAdded'] = datetime.strptime(result['dateAdded'], "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%d") if isinstance(result['dateAdded'], str) else datetime.now().date().strftime("%Y-%m-%d")
+        except ValueError:
+            pass
         except KeyError:
             df_concat.at[ind, 'dateAdded'] = datetime.now().date().strftime("%Y-%m-%d")
         
@@ -136,10 +138,6 @@ def add_more_calculations(df_concat):
         else:
             assignDefaultValues(df_concat, ind)
             return
-        
-    # cumulative price
-    # last updated
-    # if no date listed, use today
     
     total_items = len(df_concat)
     with ThreadPoolExecutor(max_workers=64) as executor1:
