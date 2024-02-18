@@ -103,8 +103,8 @@ def real_estate_tanzania_filter():
         else:
             converted_size.append(None)
         
-    df18['Internal Area (s.f)']=converted_size       
-    df18['Price per s.f.']=df18['Price']/df18['Internal Area (s.f)']
+    df18['plotSize']=converted_size       
+    df18['Price per s.f.']=df18['Price']/df18['plotSize']
     pricingCriteria=[]
     for i in df18['pricingCriteria']:
         if i==None:

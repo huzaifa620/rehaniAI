@@ -74,7 +74,7 @@ def houseInRwanda_filter():
         return round(sqft, 2)
     converted_list= list(map(convert_to_sqft, df2['plotSize'].values))
     df2['plotSize']=converted_list
-    df2.rename(columns={'plotSize':'Internal Area (s.f)'}, inplace=True)
+    # df2.rename(columns={'plotSize':'Internal Area (s.f)'}, inplace=True)
     df2['Price per s.f.']=df2['Price']/df2['Internal Area (s.f)']
     amenities=[]
     for idx,item in enumerate(df2['amenities']):

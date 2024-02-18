@@ -127,7 +127,7 @@ def ghanaPropertyCentre_filter():
             populationGrowthRate.append(None)
     df5['City Population Growth Rate']=populationGrowthRate
 
-    df5.drop(['propertyId','coveredArea','currency','marketStatus','parkingSpaces','toilets','totalArea'], axis=1,inplace=True)
+    df5.drop(['propertyId','currency','marketStatus','parkingSpaces','toilets'], axis=1,inplace=True)
     df5 = df5.reindex(sorted(df5.columns), axis=1)
 
     return df5
